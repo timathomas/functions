@@ -78,7 +78,7 @@ nt <- function(df, pWhite = "pWhite", pBlack = "pBlack", pAsian = "pAsian", pLat
 			pWhite >=.1 & pBlack >=.1 & pAsian >=.1 & pOther >=.1 & pLatinx < .1 ~ "White-Black-Asian-Other",
 			pWhite >=.1 & pBlack >=.1 & pAsian >=.1 & pLatinx >=.1 & pOther < .1 ~ "White-Black-Asian-Latinx",
 
-			pWhite >.1 & pWhite <=.7 & pBlack >.1 & pAsian >.1 & pLatinx >.1 & pOther >.1 ~ "Integrated", 
+			pWhite >.1 & pWhite <=.7 & pBlack >.1 & pAsian >.1 & pLatinx >.1 & pOther >.1 ~ "Diverse", 
 			totraceE == 0 ~ "unpopulated tract")) %>% 
 		ungroup()
 	}
