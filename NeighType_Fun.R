@@ -88,7 +88,7 @@ nt <- function(df, pWhite = "pWhite", pBlack = "pBlack", pAsian = "pAsian", pLat
 # ==========================================================================
 
 
-ntdf <- function(state, geography = "tract", county = NULL, geometry = FALSE, cache_table = TRUE,output = "wide", year = 2017){
+ntdf <- function(state, geography = "tract", county = NULL, geometry = FALSE, cache_table = TRUE, output = "wide", year = 2017){
 
 	if (!require("pacman")) install.packages("pacman")
 	pacman::p_load(tidyverse, tidycensus)
