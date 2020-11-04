@@ -8,42 +8,11 @@
 # Libraries - install if not
 # ==========================================================================
 
-	if(!require(devtools)){
-	    install.packages("devtools", dependencies = TRUE)
-	    require(devtools)
+	if(!require(pacman)){
+	    install.packages("pacman", dependencies = TRUE)
+	    require(pacman)
 	}
-	if(!require(ggmap)){
-	    devtools::install_github("dkahle/ggmap", dependencies = TRUE)
-	    require(ggmap)
-	}
-	if(!require(gender)){
-	    install.packages("gender", dependencies = TRUE)
-	    require(gender)
-	}
-	if(!require(wru)){
-	    install.packages("wru", dependencies = TRUE)
-	    require(wru)
-	}
-	if(!require(data.table)){
-	    install.packages("data.table", dependencies = TRUE)
-	    require(data.table)
-	}
-	if(!require(gdata)){
-	    install.packages("gdata", dependencies = TRUE)
-	    require(gdata)
-	}
-	if(!require(tigris)){
-	    install.packages("tigris", dependencies = TRUE)
-	    require(tigris)
-	}
-	if(!require(sf)){
-	    install.packages("sf", dependencies = TRUE)
-	    require(sf)
-	}
-	if(!require(tidyverse)){
-	    install.packages("tidyverse", dependencies = TRUE)
-	    require(tidyverse)
-	}
+pacman::p_load(devtools,gender,wru,data.table,gdata,tigris,sf,tidyverse)
 
 # ==========================================================================
 # Load data
