@@ -1,5 +1,5 @@
 # ==========================================================================
-# LCMM racial change
+# Calculate racial change in areas
 # ==========================================================================
 
 if(!require(pacman)) install.packages('pacman')
@@ -78,50 +78,66 @@ ltdb10 <-
 # Download Census Data
 # --------------------------------------------------------------------------
 
-# vars <- 
-# 	c('pop' = 'B03002_001',
-# 	'nhwht' = 'B03002_003',
-# 	'nhblk' = 'B03002_004',
-# 	'asian' = 'B03002_006',
-# 	'latinx' = 'B03002_012')
+vars <- 
+	c('pop' = 'B03002_001',
+	'nhwht' = 'B03002_003',
+	'nhblk' = 'B03002_004',
+	'asian' = 'B03002_006',
+	'latinx' = 'B03002_012')
 
-# acsrace <- 
-# 	get_acs(
-# 		state = "WA", 
-# 		county = "King", 
-# 		variables = vars,
-# 		geography = "tract", 
-# 		output = "wide"
-# 		) %>% 
-# 	select(-ends_with("M")) %>% 
-# 	group_by(GEOID) %>% 
-# 	mutate(
-# 		pop = popE,
-# 		nhwht = nhwhtE,
-# 		nhblk = nhblkE,
-# 		asian = asianE,
-# 		latinx = latinxE,
-# 		TRTID10 = as.numeric(GEOID), 
-# 		year = 2015,
-# 		other = sum(nhwht, nhblk, asian, latinx, na.rm = TRUE), 
-# 		pwht = nhwht/pop, 
-# 		pblk = nhblk/pop, 
-# 		pasi = asian/pop, 
-# 		plat = latinx/pop, 
-# 		poth = other/pop) %>% 
-# 	ungroup() %>% 
-# 	select(TRTID10, year, pop, nhwht, nhblk, asian, latinx, other, pwht, pblk, pasi, plat, poth) 
+us_states <- 
+  states(cb = TRUE) %>% 
+  st_set_geometry(NULL) %>% 
+  filter(!STUSPS %in% c("AS", "GU", "MP", "VI")) %>% # these don't have census data
+  pull(STUSPS) %>% 
+  sort()
 
-# saveRDS(acsrace, "~/git/eviction_segregation_paper/data/outputs/acs_race_2015.rds")
-acsrace <- readRDS("~/git/eviction_segregation_paper/data/outputs/acs_race_2015.rds")
+us_tracts <-
+  map_df(us_states, function(states){
+      get_acs(
+      	geography = "tract", 
+      	cb = TRUE, 
+      	year = 2015, 
+      	state = states, 
+      	variable = vars, 
+      	output = 'wide', 
+      	geometry = FALSE
+      	) %>% 
+      mutate(state = states)
+    })
+
+us_tracts_2015 <- 
+	us_tracts %>% 
+	select(-ends_with("M")) %>% 
+	group_by(GEOID) %>% 
+	mutate(
+		pop = popE,
+		nhwht = nhwhtE,
+		nhblk = nhblkE,
+		asian = asianE,
+		latinx = latinxE,
+		TRTID10 = as.numeric(GEOID), 
+		year = 2015,
+		other = sum(nhwht, nhblk, asian, latinx, na.rm = TRUE), 
+		pwht = nhwht/pop, 
+		pblk = nhblk/pop, 
+		pasi = asian/pop, 
+		plat = latinx/pop, 
+		poth = other/pop) %>% 
+	ungroup() %>% 
+	select(TRTID10, year, pop, nhwht, nhblk, asian, latinx, other, pwht, pblk, pasi, plat, poth) 
+
+saveRDS(us_tracts_2015, "~/git/functions/data/us_tracts_2015.rds")
+
+us_tracts_2015 <- readRDS("~/git/functions/data/us_tracts_2015.rds")
 
 df <- 
 	bind_rows(
-		acsrace, 
-		ltdb10 %>% filter(TRTID10 %in% acsrace$TRTID10), 
-		ltdb00 %>% filter(TRTID10 %in% acsrace$TRTID10), 
-		ltdb90 %>% filter(TRTID10 %in% acsrace$TRTID10), 
-		ltdb80 %>% filter(TRTID10 %in% acsrace$TRTID10)) %>% 
+		us_tracts_2015, 
+		ltdb10, 
+		ltdb00, 
+		ltdb90, 
+		ltdb80) %>% 
 	as.data.frame()
 
 # ==========================================================================
@@ -142,7 +158,6 @@ df80 <-
 
 dfdiff <- 
 	left_join(df15, df80) %>% 
-	glimpse() %>% 
 	mutate(
 		pop_dif = pop_2015 - pop_1980,
 		nhwht_dif = nhwht_2015 - nhwht_1980,
@@ -157,7 +172,8 @@ dfdiff <-
 		poth_dif = poth_2015 - poth_1980
 		) 
 
-saveRDS(dfdiff, "~/git/eviction_segregation_paper/data/outputs/racial_change.rds")
+saveRDS(dfdiff, "~/git/functions/data/racial_change.rds")
+glimpse(dfdiff)
 
 # ==========================================================================
 # Map

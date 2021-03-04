@@ -12,7 +12,7 @@ options(tigris_use_cache = TRUE)
 # ==========================================================================
 
 us_states <- 
-  states() %>% 
+  states(cb = TRUE) %>% 
   st_set_geometry(NULL) %>% 
   filter(!STUSPS %in% c("AS", "GU", "MP", "VI")) %>% 
   pull(STUSPS) %>% 
