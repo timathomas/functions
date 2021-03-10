@@ -20,9 +20,9 @@ us_states <-
 
 us_tracts <-
   map_df(us_states, function(states){
-      ntdf(state = states, year = 2019) %>% 
+      ntdf(state = "CA", year = 2019) %>% st_crs()
       mutate(state = states, year = 2019)
     })
 
 saveRDS(us_tracts, "~/git/neighborhood/data/us_nt_tracts.rds")
-st_write("~/git/neighborhood/data/us_nt_tracts.gpkg")
+write_csv(us_tracts, "~/git/neighborhood/data/us_nt_tracts.csv.bz2")
