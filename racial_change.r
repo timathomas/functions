@@ -4,7 +4,7 @@
 
 if(!require(pacman)) install.packages('pacman')
 pacman::p_load_gh("jalvesaq/colorout")
-pacman::p_load(tmap, lcmm, tigris, tidycensus, tidyverse)
+pacman::p_load(sf, tmap, lcmm, tigris, tidycensus, tidyverse)
 options(scipen=10, width=Sys.getenv("COLUMNS"), tigris_use_cache = TRUE) # avoid scientific notation
 
 # ==========================================================================
@@ -15,7 +15,7 @@ options(scipen=10, width=Sys.getenv("COLUMNS"), tigris_use_cache = TRUE) # avoid
 
 # ltdb70 <- read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_1970_fullcount.csv")
 ltdb80 <- 
-	read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_1980_fullcount.csv") %>%
+	read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_1980_fullcount.csv.gz") %>%
 	group_by(TRTID10) %>% 
 	mutate(
 		year = 1980, 
@@ -30,7 +30,7 @@ ltdb80 <-
 	ungroup()
 
 ltdb90 <- 
-	read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_1990_fullcount.csv") %>%
+	read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_1990_fullcount.csv.gz") %>%
 	group_by(TRTID10) %>% 
 	mutate(
 		year = 1990, 
@@ -45,7 +45,7 @@ ltdb90 <-
 	ungroup()
 
 ltdb00 <- 
-	read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_2000_fullcount.csv") %>%
+	read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_2000_fullcount.csv.gz") %>%
 	group_by(TRTID10) %>% 
 	mutate(
 		year = 2000, 
@@ -60,7 +60,7 @@ ltdb00 <-
 	ungroup()
 
 ltdb10 <- 
-	read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_2010_fullcount.csv") %>%
+	read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_2010_fullcount.csv.gz") %>%
 	group_by(TRTID10 = tractid) %>% 
 	mutate(
 		year = 2010, 
@@ -97,7 +97,7 @@ us_tracts <-
       get_acs(
       	geography = "tract", 
       	cb = TRUE, 
-      	year = 2015, 
+      	year = 2019, 
       	state = states, 
       	variable = vars, 
       	output = 'wide', 
@@ -106,7 +106,7 @@ us_tracts <-
       mutate(state = states)
     })
 
-us_tracts_2015 <- 
+us_tracts_2019 <- 
 	us_tracts %>% 
 	select(-ends_with("M")) %>% 
 	group_by(GEOID) %>% 
@@ -117,7 +117,7 @@ us_tracts_2015 <-
 		asian = asianE,
 		latinx = latinxE,
 		TRTID10 = as.numeric(GEOID), 
-		year = 2015,
+		year = 2019,
 		other = sum(nhwht, nhblk, asian, latinx, na.rm = TRUE), 
 		pwht = nhwht/pop, 
 		pblk = nhblk/pop, 
@@ -127,13 +127,13 @@ us_tracts_2015 <-
 	ungroup() %>% 
 	select(TRTID10, year, pop, nhwht, nhblk, asian, latinx, other, pwht, pblk, pasi, plat, poth) 
 
-saveRDS(us_tracts_2015, "~/git/functions/data/us_tracts_2015.rds")
+saveRDS(us_tracts_2019, "~/git/functions/data/us_tracts_2019.rds")
 
-us_tracts_2015 <- readRDS("~/git/functions/data/us_tracts_2015.rds")
+us_tracts_2019 <- readRDS("~/git/functions/data/us_tracts_2019.rds")
 
 df <- 
 	bind_rows(
-		us_tracts_2015, 
+		us_tracts_2019, 
 		ltdb10, 
 		ltdb00, 
 		ltdb90, 
@@ -144,11 +144,11 @@ df <-
 # Change from 1980 to 2015
 # ==========================================================================
 
-df15 <- 
+df19 <- 
 	df %>% 
-	filter(year == 2015) %>% 
+	filter(year == 2019) %>% 
 	select(-year) %>% 
-	rename_at(vars(pop:poth), function(x) paste0(x, "_2015"))
+	rename_at(vars(pop:poth), function(x) paste0(x, "_2019"))
 
 df80 <- 
 	df %>% 
@@ -157,19 +157,19 @@ df80 <-
 	rename_at(vars(pop:poth), function(x) paste0(x, "_1980"))
 
 dfdiff <- 
-	left_join(df15, df80) %>% 
+	left_join(df19, df80) %>% 
 	mutate(
-		pop_dif = pop_2015 - pop_1980,
-		nhwht_dif = nhwht_2015 - nhwht_1980,
-		nhblk_dif = nhblk_2015 - nhblk_1980,
-		asian_dif = asian_2015 - asian_1980,
-		latinx_dif = latinx_2015 - latinx_1980,
-		other_dif = other_2015 - other_1980,
-		pwht_dif = pwht_2015 - pwht_1980,
-		pblk_dif = pblk_2015 - pblk_1980,
-		pasi_dif = pasi_2015 - pasi_1980,
-		plat_dif = plat_2015 - plat_1980,
-		poth_dif = poth_2015 - poth_1980
+		pop_dif = pop_2019 - pop_1980,
+		nhwht_dif = nhwht_2019 - nhwht_1980,
+		nhblk_dif = nhblk_2019 - nhblk_1980,
+		asian_dif = asian_2019 - asian_1980,
+		latinx_dif = latinx_2019 - latinx_1980,
+		other_dif = other_2019 - other_1980,
+		pwht_dif = pwht_2019 - pwht_1980,
+		pblk_dif = pblk_2019 - pblk_1980,
+		pasi_dif = pasi_2019 - pasi_1980,
+		plat_dif = plat_2019 - plat_1980,
+		poth_dif = poth_2019 - poth_1980
 		) 
 
 saveRDS(dfdiff, "~/git/functions/data/racial_change.rds")
