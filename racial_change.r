@@ -4,7 +4,7 @@
 
 if(!require(pacman)) install.packages('pacman')
 pacman::p_load_gh("jalvesaq/colorout")
-pacman::p_load(sf, tmap, lcmm, tigris, tidycensus, tidyverse)
+pacman::p_load(leafsync, leaflet, leaflet.extras, rmapshaper, sf, tmap, lcmm, tigris, tidycensus, tidyverse)
 options(scipen=10, width=Sys.getenv("COLUMNS"), tigris_use_cache = TRUE) # avoid scientific notation
 
 # ==========================================================================
@@ -92,7 +92,7 @@ us_states <-
   pull(STUSPS) %>% 
   sort()
 
-us_tracts <-
+us_tracts_acs <-
   map_df(us_states, function(states){
       get_acs(
       	geography = "tract", 
@@ -107,7 +107,7 @@ us_tracts <-
     })
 
 us_tracts_2019 <- 
-	us_tracts %>% 
+	us_tracts_acs %>% 
 	select(-ends_with("M")) %>% 
 	group_by(GEOID) %>% 
 	mutate(
@@ -169,7 +169,8 @@ dfdiff <-
 		pblk_dif = pblk_2019 - pblk_1980,
 		pasi_dif = pasi_2019 - pasi_1980,
 		plat_dif = plat_2019 - plat_1980,
-		poth_dif = poth_2019 - poth_1980
+		poth_dif = poth_2019 - poth_1980, 
+		GEOID = str_pad(TRTID10, 11, pad = '0')
 		) 
 
 saveRDS(dfdiff, "~/git/functions/data/racial_change.rds")
@@ -179,54 +180,327 @@ glimpse(dfdiff)
 # Map
 # ==========================================================================
 
-kctracts <- 
-	tracts(state = "WA", county = "King", cb = TRUE) %>% 
-	left_join(dfdiff %>% mutate(GEOID = as.character(TRTID10)))
+us_tracts_sf <- 
+	map_df(us_states, function(state){
+		tracts(state = state, year = 2019, cb = TRUE)
+		}) %>% 
+	left_join(dfdiff) %>% 
+	na.omit(.) %>% 
+	ms_simplify(keep = 0.1)
 
-tmap_mode("view")
+cuts <- function(x){
+	cut(x, 
+				breaks = c(-1, -.5, -.25, -.05, .05, .25, .5, 1),
+				labels = c(
+					"50% to 100% loss", 
+					"50% to 25% loss", 
+					"25% to 5% loss", 
+					"Little Change",
+					"5% to 25% gain", 
+					"25% to 50% gain", 
+					"50% to 100% gain"
+					), 
+				ordered_result = FALSE)
+}
 
-tm_shape(kctracts) + 
-	tm_fill(
-		c("pwht_dif", "pblk_dif", "pasi_dif", "plat_dif"),
-		# n = 6,
-		style = "fixed", 
-		breaks = c(-.9, -.5, -.25, -.05, .05, .25, .5, .9)
-		) + 
-	tm_borders(alpha = .5) + 
-  	tm_layout(legend.position = c("right", "bottom"))
+final_us_tracts_sf <- 
+	us_tracts_sf %>% 
+	mutate(
+		pwht_dif_cat = cuts(pwht_dif), 						
+		pblk_dif_cat = cuts(pblk_dif), 				
+		pasi_dif_cat = cuts(pasi_dif), 				
+		plat_dif_cat = cuts(plat_dif)
+		)
+	
+# kctracts <- 
+# 	tracts(state = "WA", county = "King", cb = TRUE) %>% 
+# 	left_join(dfdiff %>% mutate(GEOID = as.character(TRTID10)))
+
+# tmap_mode("view")
+
+# tm_shape(final_us_tracts_sf %>% filter(STATEFP == "06")) + 
+# 	tm_fill(
+# 		"pwht_dif",
+# 		# n = 6,
+# 		style = "fixed", 
+# 		id = c("pwht_dif", "pblk_dif", "pasi_dif", "plat_dif"),
+# 		breaks = c(-1, -.5, -.25, -.05, .05, .25, .5, 1),
+#       palette = "-RdBu", 
+#       alpha = .5, 
+#       legend.reverse = TRUE) +
+#     tm_borders(alpha = 0, lwd = 0) + 
+#     tm_view(
+#       view.legend.position = c("left", "bottom")
+#       ) + 
+#     tm_facets(sync = TRUE, ncol = 2)
+
+# ==========================================================================
+# Map
+# ==========================================================================
+pal <- function(x)
+	colorFactor(
+	c("#2166ac",
+		"#67a9cf",
+		"#d1e5f0",
+		"transparent", # "#f7f7f7",
+		"#fddbc7",
+		"#ef8a62",
+		"#b2182b"
+		), 
+	domain = x, 
+    na.color = "transparent"
+	)
+
+whtpal <- pal(final_us_tracts_sf$pwht_dif_cat)
+blkpal <- pal(final_us_tracts_sf$pblk_dif_cat)
+asipal <- pal(final_us_tracts_sf$pasi_dif_cat)
+latpal <- pal(final_us_tracts_sf$plat_dif_cat)
+
+# White Change
+whtm <- leaflet(
+	options = leafletOptions(zoomControl = TRUE, position = "bottomleft", title = "Washington Evictions")) %>% 
+	# addControl("White Percentage<br>Point Change", position = "topright") %>% 
+	# addControl(year_list, position = "topleft") %>%  
+    addEasyButton(
+    easyButton(
+        icon="fa-crosshairs", 
+        title="My Location",
+        onClick=JS("function(btn, map){ map.locate({setView: true}); }"))) %>%
+	addSearchOSM() %>% 
+    addMapPane(name = "polygons", zIndex = 410) %>% 
+    addMapPane(name = "maplabels", zIndex = 420) %>% # higher zIndex rendered on top
+    addProviderTiles("CartoDB.PositronNoLabels") %>%
+    addProviderTiles("CartoDB.PositronOnlyLabels", 
+                   options = leafletOptions(pane = "maplabels"),
+                   group = "map labels") %>% # see: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+# Eviction Risk
+  	addPolygons(
+		data = final_us_tracts_sf %>% filter(STATEFP == "06"),
+  		group = "White Change", 
+  		label = ~case_when(
+  			pwht_dif < 0 ~ paste0(scales::percent(pwht_dif, accuracy = 1), " point White decrease"), 
+  			pwht_dif >= 0 ~ paste0(scales::percent(pwht_dif, accuracy = 1), " point White increase"), 
+  			TRUE ~ "No data"
+  			), 
+  		labelOptions = labelOptions(textsize = "12px"), 
+  		fillOpacity = .5, 
+  		color = ~whtpal(pwht_dif_cat), 
+  		stroke = TRUE, 
+  		weight = 1, 
+  		opacity = .3, 
+		highlightOptions = highlightOptions(
+                            color = "#ff4a4a", 
+                            weight = 5,
+                            bringToFront = TRUE
+                            ), 
+        # popup = ~popup, 
+        popupOptions = popupOptions(maxHeight = 215, closeOnClick = TRUE)
+  		) %>%   
+    addLegend( 
+    	data = final_us_tracts_sf %>% filter(STATEFP == "06"), 
+        position = 'bottomleft',
+        pal = whtpal, 
+        values = ~pwht_dif_cat, 
+        group = "White Percentage<br>Point Change",
+        title = "White Percentage<br>Point Change"
+    ) %>% 
+    setView(lng = -122.5, lat = 37.8, zoom = 10)
+
+
+# Black Change
+blkm <- leaflet(
+	options = leafletOptions(zoomControl = TRUE, position = "bottomleft", title = "Washington Evictions")) %>% 
+	# addControl("White Percentage<br>Point Change", position = "topright") %>% 
+	# addControl(year_list, position = "topleft") %>%  
+    addEasyButton(
+    easyButton(
+        icon="fa-crosshairs", 
+        title="My Location",
+        onClick=JS("function(btn, map){ map.locate({setView: true}); }"))) %>%
+	addSearchOSM() %>% 
+    addMapPane(name = "polygons", zIndex = 410) %>% 
+    addMapPane(name = "maplabels", zIndex = 420) %>% # higher zIndex rendered on top
+    addProviderTiles("CartoDB.PositronNoLabels") %>%
+    addProviderTiles("CartoDB.PositronOnlyLabels", 
+                   options = leafletOptions(pane = "maplabels"),
+                   group = "map labels") %>% # see: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+# Eviction Risk
+  	addPolygons(
+		data = final_us_tracts_sf %>% filter(STATEFP == "06"),
+  		group = "Black Change", 
+  		label = ~case_when(
+  			pblk_dif < 0 ~ paste0(scales::percent(pblk_dif, accuracy = 1), " point Black decrease"), 
+  			pblk_dif >= 0 ~ paste0(scales::percent(pblk_dif, accuracy = 1), " point Black increase"), 
+  			TRUE ~ "No data"
+  			), 
+  		labelOptions = labelOptions(textsize = "12px"), 
+  		fillOpacity = .5, 
+  		color = ~blkpal(pblk_dif_cat), 
+  		stroke = TRUE, 
+  		weight = 1, 
+  		opacity = .3, 
+		highlightOptions = highlightOptions(
+                            color = "#ff4a4a", 
+                            weight = 5,
+                            bringToFront = TRUE
+                            ), 
+        # popup = ~popup, 
+        popupOptions = popupOptions(maxHeight = 215, closeOnClick = TRUE)
+  		) %>%   
+    addLegend( 
+    	data = final_us_tracts_sf %>% filter(STATEFP == "06"), 
+        position = 'bottomleft',
+        pal = blkpal, 
+        values = ~pblk_dif_cat, 
+        group = "Black Percentage<br>Point Change",
+        title = "Black Percentage<br>Point Change"
+    ) 
+# Latinx Change
+latm <- leaflet(
+	options = leafletOptions(zoomControl = TRUE, position = "bottomleft", title = "Washington Evictions")) %>% 
+	# addControl("White Percentage<br>Point Change", position = "topright") %>% 
+	# addControl(year_list, position = "topleft") %>%  
+    addEasyButton(
+    easyButton(
+        icon="fa-crosshairs", 
+        title="My Location",
+        onClick=JS("function(btn, map){ map.locate({setView: true}); }"))) %>%
+	addSearchOSM() %>% 
+    addMapPane(name = "polygons", zIndex = 410) %>% 
+    addMapPane(name = "maplabels", zIndex = 420) %>% # higher zIndex rendered on top
+    addProviderTiles("CartoDB.PositronNoLabels") %>%
+    addProviderTiles("CartoDB.PositronOnlyLabels", 
+                   options = leafletOptions(pane = "maplabels"),
+                   group = "map labels") %>% # see: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+# Eviction Risk
+  	addPolygons(
+		data = final_us_tracts_sf %>% filter(STATEFP == "06"),
+  		group = "Latinx Change", 
+  		label = ~case_when(
+  			plat_dif < 0 ~ paste0(scales::percent(plat_dif, accuracy = 1), " point Latinx decrease"), 
+  			plat_dif >= 0 ~ paste0(scales::percent(plat_dif, accuracy = 1), " point Latinx increase"), 
+  			TRUE ~ "No data"
+  			), 
+  		labelOptions = labelOptions(textsize = "12px"), 
+  		fillOpacity = .5, 
+  		color = ~latpal(plat_dif_cat), 
+  		stroke = TRUE, 
+  		weight = 1, 
+  		opacity = .3, 
+		highlightOptions = highlightOptions(
+                            color = "#ff4a4a", 
+                            weight = 5,
+                            bringToFront = TRUE
+                            ), 
+        # popup = ~popup, 
+        popupOptions = popupOptions(maxHeight = 215, closeOnClick = TRUE)
+  		) %>%   
+    addLegend( 
+    	data = final_us_tracts_sf %>% filter(STATEFP == "06"), 
+        position = 'bottomleft',
+        pal = latpal, 
+        values = ~plat_dif_cat, 
+        group = "Latinx Percentage<br>Point Change",
+        title = "Latinx Percentage<br>Point Change"
+    ) %>% 
+   	addMiniMap(tiles = providers$CartoDB.Positron, 
+			   toggleDisplay = TRUE) 
+
+
+# Latinx Change
+asim <- leaflet(
+	options = leafletOptions(zoomControl = TRUE, position = "bottomleft", title = "Washington Evictions")) %>% 
+	# addControl("White Percentage<br>Point Change", position = "topright") %>% 
+	# addControl(year_list, position = "topleft") %>%  
+    addEasyButton(
+    easyButton(
+        icon="fa-crosshairs", 
+        title="My Location",
+        onClick=JS("function(btn, map){ map.locate({setView: true}); }"))) %>%
+	addSearchOSM() %>% 
+    addMapPane(name = "polygons", zIndex = 410) %>% 
+    addMapPane(name = "maplabels", zIndex = 420) %>% # higher zIndex rendered on top
+    addProviderTiles("CartoDB.PositronNoLabels") %>%
+    addProviderTiles("CartoDB.PositronOnlyLabels", 
+                   options = leafletOptions(pane = "maplabels"),
+                   group = "map labels") %>% # see: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+# Eviction Risk
+  	addPolygons(
+		data = final_us_tracts_sf %>% filter(STATEFP == "06"),
+  		group = "Asian Change", 
+  		label = ~case_when(
+  			pasi_dif < 0 ~ paste0(scales::percent(pasi_dif, accuracy = 1), " point Asian decrease"), 
+  			pasi_dif >= 0 ~ paste0(scales::percent(pasi_dif, accuracy = 1), " point Asian increase"), 
+  			TRUE ~ "No data"
+  			), 
+  		labelOptions = labelOptions(textsize = "12px"), 
+  		fillOpacity = .5, 
+  		color = ~asipal(pasi_dif_cat), 
+  		stroke = TRUE, 
+  		weight = 1, 
+  		opacity = .3, 
+		highlightOptions = highlightOptions(
+                            color = "#ff4a4a", 
+                            weight = 5,
+                            bringToFront = TRUE
+                            ), 
+        # popup = ~popup, 
+        popupOptions = popupOptions(maxHeight = 215, closeOnClick = TRUE)
+  		) %>%   
+    addLegend( 
+    	data = final_us_tracts_sf %>% filter(STATEFP == "06"), 
+        position = 'bottomleft',
+        pal = asipal, 
+        values = ~pasi_dif_cat, 
+        group = "Asian Percentage<br>Point Change",
+        title = "Asian Percentage<br>Point Change"
+    ) 
+
+
+sync(whtm, blkm)
+sync(whtm, blkm, asim, latm)
+
+
+    # %>% 
+  #   addLayersControl(
+		# position = 'topright', 
+		# baseGroups = c(
+		# 	'White Change',
+		# 	), 
+		# options = layersControlOptions(collapsed = FALSE)) %>%
 
 # ==========================================================================
 # LCMM Setup
 # ==========================================================================
 
-mlcmm <- 
-	function(x){
-		multlcmm(
-			pwht + pblk + pasi + plat ~ 1 + year, 
-			subject = "TRTID10", 
-			link = "linear", 
-			ng = x, 
-			mixture = ~1+year, 
-			random = ~1+year, 
-			data = df)
-	}
+# mlcmm <- 
+# 	function(x){
+# 		multlcmm(
+# 			pwht + pblk + pasi + plat ~ 1 + year, 
+# 			subject = "TRTID10", 
+# 			link = "linear", 
+# 			ng = x, 
+# 			mixture = ~1+year, 
+# 			random = ~1+year, 
+# 			data = df)
+# 	}
 
-t2 <- mlcmm(2); t2$BIC
-t3 <- mlcmm(3); t3$BIC
-t4 <- mlcmm(4); t4$BIC
-t5 <- mlcmm(5); t5$BIC
-t6 <- mlcmm(6); t6$BIC
-t7 <- mlcmm(7); t7$BIC
-t8 <- mlcmm(8); t8$BIC
-t9 <- mlcmm(9); t9$BIC
-t10 <- mlcmm(10); t10$BIC
+# t2 <- mlcmm(2); t2$BIC
+# t3 <- mlcmm(3); t3$BIC
+# t4 <- mlcmm(4); t4$BIC
+# t5 <- mlcmm(5); t5$BIC
+# t6 <- mlcmm(6); t6$BIC
+# t7 <- mlcmm(7); t7$BIC
+# t8 <- mlcmm(8); t8$BIC
+# t9 <- mlcmm(9); t9$BIC
+# t10 <- mlcmm(10); t10$BIC
 
-summary(t2); postprob(t2); plot(t2,which="linkfunction")
-summary(t3); postprob(t3); plot(t3,which="linkfunction")
-summary(t4); postprob(t4); plot(t4,which="linkfunction")
-summary(t5); postprob(t5); plot(t5,which="linkfunction")
-summary(t6); postprob(t6); plot(t6,which="linkfunction")
-summary(t7); postprob(t7); plot(t7,which="linkfunction")
-summary(t8); postprob(t8); plot(t8,which="linkfunction")
-summary(t9); postprob(t9); plot(t9,which="linkfunction")
-summary(t10); postprob(t10); plot(t10,which="linkfunction")
+# summary(t2); postprob(t2); plot(t2,which="linkfunction")
+# summary(t3); postprob(t3); plot(t3,which="linkfunction")
+# summary(t4); postprob(t4); plot(t4,which="linkfunction")
+# summary(t5); postprob(t5); plot(t5,which="linkfunction")
+# summary(t6); postprob(t6); plot(t6,which="linkfunction")
+# summary(t7); postprob(t7); plot(t7,which="linkfunction")
+# summary(t8); postprob(t8); plot(t8,which="linkfunction")
+# summary(t9); postprob(t9); plot(t9,which="linkfunction")
+# summary(t10); postprob(t10); plot(t10,which="linkfunction")
