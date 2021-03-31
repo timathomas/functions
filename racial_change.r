@@ -304,7 +304,7 @@ whtm <- leaflet(
         group = "White Percentage<br>Point Change",
         title = "White Percentage<br>Point Change"
     ) %>% 
-    setView(lng = -122.5, lat = 37.8, zoom = 10)
+    setView(lng = -122.4, lat = 37.8, zoom = 10)
 
 
 # Black Change
@@ -354,7 +354,9 @@ blkm <- leaflet(
         values = ~pblk_dif_cat, 
         group = "Black Percentage<br>Point Change",
         title = "Black Percentage<br>Point Change"
-    ) 
+    ) %>% 
+    setView(lng = -122.4, lat = 37.8, zoom = 10)
+
 # Latinx Change
 latm <- leaflet(
 	options = leafletOptions(zoomControl = TRUE, position = "bottomleft", title = "Washington Evictions")) %>% 
@@ -404,7 +406,8 @@ latm <- leaflet(
         title = "Latinx Percentage<br>Point Change"
     ) %>% 
    	addMiniMap(tiles = providers$CartoDB.Positron, 
-			   toggleDisplay = TRUE) 
+			   toggleDisplay = TRUE) %>% 
+    setView(lng = -122.4, lat = 37.8, zoom = 10)
 
 
 # Latinx Change
@@ -454,7 +457,8 @@ asim <- leaflet(
         values = ~pasi_dif_cat, 
         group = "Asian Percentage<br>Point Change",
         title = "Asian Percentage<br>Point Change"
-    ) 
+    ) %>% 
+    setView(lng = -122.4, lat = 37.8, zoom = 10)
 
 
 sync(whtm, blkm)

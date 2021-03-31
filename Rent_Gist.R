@@ -603,3 +603,124 @@ total units <-
 
 
 
+# ==========================================================================
+# California income by race
+# ==========================================================================
+acsmedinc_vars <-
+	c('mhhinc' = 'B19013_001',
+	  'mhhinc_wht' = 'B19013A_001',
+	  'mhhinc_blk' = 'B19013B_001',
+	  'mhhinc_aian' = 'B19013C_001',
+	  'mhhinc_asi' = 'B19013D_001',
+	  'mhhinc_nhop' = 'B19013E_001',
+	  'mhhinc_oth' = 'B19013F_001',
+	  'mhhinc_two' = 'B19013G_001',
+	  'mhhinc_whtnl' = 'B19013H_001',
+	  'mhhinc_lat' = 'B19013I_001')
+
+acsrent_vars <-
+	c(
+	'totten' = 'B25003_001',
+	'totown' = 'B25003_002',
+	'totrent' = 'B25003_003',
+	'tottenWHT' = 'B25003A_001',
+	'totownWHT' = 'B25003A_002',
+	'totrentWHT' = 'B25003A_003',
+	'tottenBLK' = 'B25003B_001',
+	'totownBLK' = 'B25003B_002',
+	'totrentBLK' = 'B25003B_003',
+	'tottenAIAN' = 'B25003C_001',
+	'totownAIAN' = 'B25003C_002',
+	'totrentAIAN' = 'B25003C_003',
+	'tottenASI' = 'B25003D_001',
+	'totownASI' = 'B25003D_002',
+	'totrentASI' = 'B25003D_003',
+	'tottenNHOP' = 'B25003E_001',
+	'totownNHOP' = 'B25003E_002',
+	'totrentNHOP' = 'B25003E_003',
+	'tottenOTH' = 'B25003F_001',
+	'totownOTH' = 'B25003F_002',
+	'totrentOTH' = 'B25003F_003',
+	'tottenTWO' = 'B25003G_001',
+	'totownTWO' = 'B25003G_002',
+	'totrentTWO' = 'B25003G_003',
+	'tottenWHTNL' = 'B25003H_001',
+	'totownWHTNL' = 'B25003H_002',
+	'totrentWHTNL' = 'B25003H_003',
+	'tottenLAT' = 'B25003I_001',
+	'totownLAT' = 'B25003I_002',
+	'totrentLAT' = 'B25003I_003',
+	'vac_tot' = 'B25004_001',
+   	'vac_rent' = 'B25004_003',
+	'mgrent' = 'B25064_001'
+	)
+
+rinc <- 
+	get_acs(
+		geography = "county", 
+		state = "CA", 
+		variables = acsmedinc_vars, 
+		geometry = FALSE, 
+		output = "wide", 
+		survey = "acs1"
+		) %>% 
+	select(-ends_with("M"))
+
+ten <- 
+	get_acs(
+		geography = "county", 
+		state = "CA", 
+		variables = acsrent_vars, 
+		geometry = FALSE, 
+		output = "wide", 
+		survey = "acs1"
+		) %>% 
+	select(-ends_with("M")) %>% 
+	mutate(
+		blkrenters = totrentBLKE/totrentE, 
+		whtrenters = totrentWHTE/totrentE, 
+		asirenters = totrentASIE/totrentE, 
+		latrenters = totrentLATE/totrentE, 
+		)
+
+
+fmr_ca <- 
+	readxl::read_excel("/Users/timthomas/git/california/data/ca_fmr.xlsx") %>% 
+	mutate(
+		NAME = paste0(County, ", California")
+		)
+
+fmr_rinc <- 
+	left_join(fmr_ca %>% filter(Year == 2019), rinc) %>% 
+	left_join(ten) %>% 
+	mutate(rb_inc_1b = (OneBedroom*12)/.3, 
+		rb_inc_2b = (TwoBedroom*12)/.3, 
+		amii80 = mhhincE*.8, 
+		ami50 = mhhincE*.5, 
+		ami30 = mhhincE*.3, 
+		County = str_remove_all(County, " County"), 
+		whtrb = (mhhinc_whtE/12)*.3, 
+		blkrb = (mhhinc_blkE/12)*.3, 
+		asirb = (mhhinc_asiE/12)*.3, 
+		latrb = (mhhinc_latE/12)*.3)
+
+ggplot(fmr_rinc %>% filter(totrentE > 1000)) + 
+	  theme_minimal() +
+	  geom_point(aes(x = reorder(County, TwoBedroom), y = TwoBedroom), color = "cornflowerblue") +
+	  geom_point(aes(x = reorder(County, TwoBedroom), y = OneBedroom), color = "blue") +
+	  geom_point(data = fmr_rinc %>% filter(whtrenters > .05), aes(x = reorder(County, TwoBedroom), y = whtrb), color = "chartreuse4") +	 
+	  geom_point(data = fmr_rinc %>% filter(asirenters > .05), aes(x = reorder(County, TwoBedroom), y = asirb), color = "aquamarine3") +
+	  geom_point(data = fmr_rinc %>% filter(blkrenters > .05), aes(x = reorder(County, TwoBedroom), y = blkrb), color = "red") +
+	  geom_point(data = fmr_rinc %>% filter(latrenters > .05), aes(x = reorder(County, TwoBedroom), y = latrb), color = "orange") +
+	  theme(axis.text.x = element_text(angle = 90)) + 
+      scale_y_continuous(labels = scales::dollar, name = "Rent", 
+                         sec.axis = sec_axis(~(.*12)/.3, name = "Income to avoid rent burden", labels = scales::dollar), 
+                         limits = c(0, 4000)
+                         ) +
+	  labs(title = "One and two Bedroom FMR & Income by Race by CA county",
+	       subtitle = "rent burden = 30% of household income going to rent",
+	       # y = "Income to avoid rent burden",
+	       x = "",
+	       caption = "Data source: HUD Fair Market Rent data & US Census American Community Survey") +
+	  # coord_cartesian(ylim = 4000, expand =) +
+	  theme(axis.text.x = element_text(angle = 90, hjust = 1))
