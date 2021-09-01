@@ -15,7 +15,7 @@ options(scipen=10, width=Sys.getenv("COLUMNS"), tigris_use_cache = TRUE) # avoid
 
 # ltdb70 <- read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_1970_fullcount.csv")
 ltdb80 <- 
-	read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_1980_fullcount.csv.gz") %>%
+	read_csv("/Volumes/GoogleDrive/My Drive/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_1980_fullcount.csv") %>%
 	group_by(TRTID10) %>% 
 	mutate(
 		year = 1980, 
@@ -30,7 +30,7 @@ ltdb80 <-
 	ungroup()
 
 ltdb90 <- 
-	read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_1990_fullcount.csv.gz") %>%
+	read_csv("/Volumes/GoogleDrive/My Drive/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_1990_fullcount.csv") %>%
 	group_by(TRTID10) %>% 
 	mutate(
 		year = 1990, 
@@ -45,7 +45,7 @@ ltdb90 <-
 	ungroup()
 
 ltdb00 <- 
-	read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_2000_fullcount.csv.gz") %>%
+	read_csv("/Volumes/GoogleDrive/My Drive/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_2000_fullcount.csv") %>%
 	group_by(TRTID10) %>% 
 	mutate(
 		year = 2000, 
@@ -60,7 +60,7 @@ ltdb00 <-
 	ungroup()
 
 ltdb10 <- 
-	read_csv("~/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_2010_fullcount.csv.gz") %>%
+	read_csv("/Volumes/GoogleDrive/My Drive/data/LTDB/LTDB_Std_All_fullcount/LTDB_Std_2010_fullcount.csv") %>%
 	group_by(TRTID10 = tractid) %>% 
 	mutate(
 		year = 2010, 
@@ -97,7 +97,7 @@ us_tracts_acs <-
       get_acs(
       	geography = "tract", 
       	cb = TRUE, 
-      	year = 2015, 
+      	# year = 2015, 
       	state = states, 
       	variable = vars, 
       	output = 'wide', 
@@ -106,7 +106,7 @@ us_tracts_acs <-
       mutate(state = states)
     })
 
-us_tracts_2015 <- 
+us_tracts_2019 <- 
 	us_tracts_acs %>% 
 	select(-ends_with("M")) %>% 
 	group_by(GEOID) %>% 
@@ -117,7 +117,7 @@ us_tracts_2015 <-
 		asian = asianE,
 		latinx = latinxE,
 		TRTID10 = as.numeric(GEOID), 
-		year = 2015,
+		year = 2019,
 		other = sum(nhwht, nhblk, asian, latinx, na.rm = TRUE), 
 		pwht = nhwht/pop, 
 		pblk = nhblk/pop, 
@@ -127,9 +127,9 @@ us_tracts_2015 <-
 	ungroup() %>% 
 	select(TRTID10, year, pop, nhwht, nhblk, asian, latinx, other, pwht, pblk, pasi, plat, poth) 
 
-saveRDS(us_tracts_2015, "~/git/functions/data/us_tracts_2015.rds")
+saveRDS(us_tracts_2019, "~/git/functions/data/us_tracts_2019.rds")
 
-us_tracts_2015 <- readRDS("~/git/functions/data/us_tracts_2015.rds")
+us_tracts_2019 <- readRDS("~/git/functions/data/us_tracts_2019.rds")
 
 df <- 
 	bind_rows(
