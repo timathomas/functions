@@ -133,7 +133,7 @@ us_tracts_2019 <- readRDS("~/git/functions/data/us_tracts_2019.rds")
 
 df <- 
 	bind_rows(
-		us_tracts_2015, 
+		us_tracts_2019, 
 		ltdb10, 
 		ltdb00, 
 		ltdb90, 
@@ -141,14 +141,14 @@ df <-
 	as.data.frame()
 
 # ==========================================================================
-# Change from 1980 to 2015
+# Change from 1980 to 2019
 # ==========================================================================
 
-df15 <- 
+df19 <- 
 	df %>% 
-	filter(year == 2015) %>% 
+	filter(year == 2019) %>% 
 	select(-year) %>% 
-	rename_at(vars(pop:poth), function(x) paste0(x, "_2015"))
+	rename_at(vars(pop:poth), function(x) paste0(x, "_2019"))
 
 df80 <- 
 	df %>% 
@@ -157,19 +157,19 @@ df80 <-
 	rename_at(vars(pop:poth), function(x) paste0(x, "_1980"))
 
 dfdiff <- 
-	left_join(df15, df80) %>% 
+	left_join(df19, df80) %>% 
 	mutate(
-		pop_dif = pop_2015 - pop_1980,
-		nhwht_dif = nhwht_2015 - nhwht_1980,
-		nhblk_dif = nhblk_2015 - nhblk_1980,
-		asian_dif = asian_2015 - asian_1980,
-		latinx_dif = latinx_2015 - latinx_1980,
-		other_dif = other_2015 - other_1980,
-		pwht_dif = pwht_2015 - pwht_1980,
-		pblk_dif = pblk_2015 - pblk_1980,
-		pasi_dif = pasi_2015 - pasi_1980,
-		plat_dif = plat_2015 - plat_1980,
-		poth_dif = poth_2015 - poth_1980, 
+		pop_dif = pop_2019 - pop_1980,
+		nhwht_dif = nhwht_2019 - nhwht_1980,
+		nhblk_dif = nhblk_2019 - nhblk_1980,
+		asian_dif = asian_2019 - asian_1980,
+		latinx_dif = latinx_2019 - latinx_1980,
+		other_dif = other_2019 - other_1980,
+		pwht_dif = pwht_2019 - pwht_1980,
+		pblk_dif = pblk_2019 - pblk_1980,
+		pasi_dif = pasi_2019 - pasi_1980,
+		plat_dif = plat_2019 - plat_1980,
+		poth_dif = poth_2019 - poth_1980, 
 		GEOID = str_pad(TRTID10, 11, pad = '0')
 		) 
 
@@ -261,11 +261,11 @@ whtm <- leaflet(
 	options = leafletOptions(zoomControl = TRUE, position = "bottomleft", title = "Washington Evictions")) %>% 
 	# addControl("White Percentage<br>Point Change", position = "topright") %>% 
 	# addControl(year_list, position = "topleft") %>%  
-    addEasyButton(
-    easyButton(
-        icon="fa-crosshairs", 
-        title="My Location",
-        onClick=JS("function(btn, map){ map.locate({setView: true}); }"))) %>%
+    # addEasyButton(
+    # easyButton(
+    #     icon="fa-crosshairs", 
+    #     title="My Location",
+    #     onClick=JS("function(btn, map){ map.locate({setView: true}); }"))) %>%
 	addSearchOSM() %>% 
     addMapPane(name = "polygons", zIndex = 410) %>% 
     addMapPane(name = "maplabels", zIndex = 420) %>% # higher zIndex rendered on top
@@ -275,7 +275,7 @@ whtm <- leaflet(
                    group = "map labels") %>% # see: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
 # Eviction Risk
   	addPolygons(
-		data = final_us_tracts_sf %>% filter(STATEFP == "06"),
+		data = final_us_tracts_sf %>% filter(STATEFP == "53"),
   		group = "White Change", 
   		label = ~case_when(
   			pwht_dif < 0 ~ paste0(scales::percent(pwht_dif, accuracy = 1), " point White decrease"), 
@@ -297,7 +297,7 @@ whtm <- leaflet(
         popupOptions = popupOptions(maxHeight = 215, closeOnClick = TRUE)
   		) %>%   
     addLegend( 
-    	data = final_us_tracts_sf %>% filter(STATEFP == "06"), 
+    	data = final_us_tracts_sf %>% filter(STATEFP == "53"), 
         position = 'bottomleft',
         pal = whtpal, 
         values = ~pwht_dif_cat, 
@@ -312,11 +312,11 @@ blkm <- leaflet(
 	options = leafletOptions(zoomControl = TRUE, position = "bottomleft", title = "Washington Evictions")) %>% 
 	# addControl("White Percentage<br>Point Change", position = "topright") %>% 
 	# addControl(year_list, position = "topleft") %>%  
-    addEasyButton(
-    easyButton(
-        icon="fa-crosshairs", 
-        title="My Location",
-        onClick=JS("function(btn, map){ map.locate({setView: true}); }"))) %>%
+    # addEasyButton(
+    # easyButton(
+    #     icon="fa-crosshairs", 
+    #     title="My Location",
+    #     onClick=JS("function(btn, map){ map.locate({setView: true}); }"))) %>%
 	addSearchOSM() %>% 
     addMapPane(name = "polygons", zIndex = 410) %>% 
     addMapPane(name = "maplabels", zIndex = 420) %>% # higher zIndex rendered on top
@@ -326,7 +326,7 @@ blkm <- leaflet(
                    group = "map labels") %>% # see: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
 # Eviction Risk
   	addPolygons(
-		data = final_us_tracts_sf %>% filter(STATEFP == "06"),
+		data = final_us_tracts_sf %>% filter(STATEFP == "53"),
   		group = "Black Change", 
   		label = ~case_when(
   			pblk_dif < 0 ~ paste0(scales::percent(pblk_dif, accuracy = 1), " point Black decrease"), 
@@ -348,7 +348,7 @@ blkm <- leaflet(
         popupOptions = popupOptions(maxHeight = 215, closeOnClick = TRUE)
   		) %>%   
     addLegend( 
-    	data = final_us_tracts_sf %>% filter(STATEFP == "06"), 
+    	data = final_us_tracts_sf %>% filter(STATEFP == "53"), 
         position = 'bottomleft',
         pal = blkpal, 
         values = ~pblk_dif_cat, 
@@ -362,11 +362,11 @@ latm <- leaflet(
 	options = leafletOptions(zoomControl = TRUE, position = "bottomleft", title = "Washington Evictions")) %>% 
 	# addControl("White Percentage<br>Point Change", position = "topright") %>% 
 	# addControl(year_list, position = "topleft") %>%  
-    addEasyButton(
-    easyButton(
-        icon="fa-crosshairs", 
-        title="My Location",
-        onClick=JS("function(btn, map){ map.locate({setView: true}); }"))) %>%
+    # addEasyButton(
+    # easyButton(
+    #     icon="fa-crosshairs", 
+    #     title="My Location",
+    #     onClick=JS("function(btn, map){ map.locate({setView: true}); }"))) %>%
 	addSearchOSM() %>% 
     addMapPane(name = "polygons", zIndex = 410) %>% 
     addMapPane(name = "maplabels", zIndex = 420) %>% # higher zIndex rendered on top
@@ -376,7 +376,7 @@ latm <- leaflet(
                    group = "map labels") %>% # see: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
 # Eviction Risk
   	addPolygons(
-		data = final_us_tracts_sf %>% filter(STATEFP == "06"),
+		data = final_us_tracts_sf %>% filter(STATEFP == "53"),
   		group = "Latinx Change", 
   		label = ~case_when(
   			plat_dif < 0 ~ paste0(scales::percent(plat_dif, accuracy = 1), " point Latinx decrease"), 
@@ -398,15 +398,15 @@ latm <- leaflet(
         popupOptions = popupOptions(maxHeight = 215, closeOnClick = TRUE)
   		) %>%   
     addLegend( 
-    	data = final_us_tracts_sf %>% filter(STATEFP == "06"), 
+    	data = final_us_tracts_sf %>% filter(STATEFP == "53"), 
         position = 'bottomleft',
         pal = latpal, 
         values = ~plat_dif_cat, 
         group = "Latinx Percentage<br>Point Change",
         title = "Latinx Percentage<br>Point Change"
     ) %>% 
-   	addMiniMap(tiles = providers$CartoDB.Positron, 
-			   toggleDisplay = TRUE) %>% 
+   	# addMiniMap(tiles = providers$CartoDB.Positron, 
+			 #   toggleDisplay = TRUE) %>% 
     setView(lng = -122.4, lat = 37.8, zoom = 10)
 
 
@@ -415,11 +415,11 @@ asim <- leaflet(
 	options = leafletOptions(zoomControl = TRUE, position = "bottomleft", title = "Washington Evictions")) %>% 
 	# addControl("White Percentage<br>Point Change", position = "topright") %>% 
 	# addControl(year_list, position = "topleft") %>%  
-    addEasyButton(
-    easyButton(
-        icon="fa-crosshairs", 
-        title="My Location",
-        onClick=JS("function(btn, map){ map.locate({setView: true}); }"))) %>%
+    # addEasyButton(
+    # easyButton(
+    #     icon="fa-crosshairs", 
+    #     title="My Location",
+    #     onClick=JS("function(btn, map){ map.locate({setView: true}); }"))) %>%
 	addSearchOSM() %>% 
     addMapPane(name = "polygons", zIndex = 410) %>% 
     addMapPane(name = "maplabels", zIndex = 420) %>% # higher zIndex rendered on top
@@ -429,7 +429,7 @@ asim <- leaflet(
                    group = "map labels") %>% # see: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
 # Eviction Risk
   	addPolygons(
-		data = final_us_tracts_sf %>% filter(STATEFP == "06"),
+		data = final_us_tracts_sf %>% filter(STATEFP == "53"),
   		group = "Asian Change", 
   		label = ~case_when(
   			pasi_dif < 0 ~ paste0(scales::percent(pasi_dif, accuracy = 1), " point Asian decrease"), 
@@ -451,7 +451,7 @@ asim <- leaflet(
         popupOptions = popupOptions(maxHeight = 215, closeOnClick = TRUE)
   		) %>%   
     addLegend( 
-    	data = final_us_tracts_sf %>% filter(STATEFP == "06"), 
+    	data = final_us_tracts_sf %>% filter(STATEFP == "53"), 
         position = 'bottomleft',
         pal = asipal, 
         values = ~pasi_dif_cat, 
@@ -508,3 +508,16 @@ sync(whtm, blkm, asim, latm)
 # summary(t8); postprob(t8); plot(t8,which="linkfunction")
 # summary(t9); postprob(t9); plot(t9,which="linkfunction")
 # summary(t10); postprob(t10); plot(t10,which="linkfunction")
+
+source("/Users/timthomas/git/functions/Income_Gist.R")
+
+  ggpubr::ggarrange(
+  plot_wa_medinc(),
+  plot_co_medinc(county = "Pierce") +
+    annotate("text", x = 2007, y = 62000, label = "80% AMI") +
+    annotate("text", x = 2007, y = 39000, label = "50% AMI") +
+    annotate("text", x = 2007, y = 23500, label = "30% AMI"),
+  ncol = 2,
+  nrow = 1,
+  common.legend = TRUE,
+  legend="bottom")

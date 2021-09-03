@@ -25,17 +25,17 @@ library(tidyverse)
 # Variables
 # ==========================================================================
 
-path <- "/data/Functions/" # adjust as needed
+path <- "~/git/functions/" # adjust as needed
 var <- "Variables.R"
 
-source(paste0(path, var))
+source("~/git/functions/Variables.R")
 
 #
 # Functions
 # --------------------------------------------------------------------------
 
-	acs5yr <- c(2017,2009)
-	acs1year <- rep(2012:2017, 1)
+	acs5yr <- c(2019,2009)
+	acs1year <- rep(2012:2019, 1)
 	acs <-
 		function(
 			geography = "county",
@@ -308,12 +308,12 @@ source(paste0(path, var))
 # Write Data
 # ==========================================================================
 
-date <- format(Sys.time(), "%Y-%m-%d")
-file.path <- "/data/census/"
-	write_csv(hhinc, "/data/census/household_income.csv.bz2")
-	write_csv(medinc, "/data/census/medinc.csv.bz2")
-	write_csv(wa_medinc, "/data/census/wa_medinc.csv.bz2")
-	write_csv(hhincten, "/data/census/hhincten.csv.bz2")
+# date <- format(Sys.time(), "%Y-%m-%d")
+# file.path <- "/data/census/"
+	write_csv(hhinc, "/Volumes/GoogleDrive/My Drive/data/census/household_income.csv.bz2")
+	write_csv(medinc, "/Volumes/GoogleDrive/My Drive/data/census/medinc.csv.bz2")
+	write_csv(wa_medinc, "/Volumes/GoogleDrive/My Drive/data/census/wa_medinc.csv.bz2")
+	write_csv(hhincten, "/Volumes/GoogleDrive/My Drive/data/census/hhincten.csv.bz2")
 
 # ==========================================================================
 # Edits

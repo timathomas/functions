@@ -6,10 +6,10 @@ library(data.table)
 library(scales)
 library(tidyverse)
 
-hhinc <- fread("/data/census/household_income.csv.bz2")
-hhincten <- fread("/data/census/hhincten.csv.bz2")
-medinc <- fread("/data/census/medinc.csv.bz2")
-wa_medinc <- fread("/data/census/wa_medinc.csv.bz2")
+hhinc <- fread("/Volumes/GoogleDrive/My Drive/data/census/household_income.csv.bz2")
+hhincten <- fread("/Volumes/GoogleDrive/My Drive/data/census/hhincten.csv.bz2")
+medinc <- fread("/Volumes/GoogleDrive/My Drive/data/census/medinc.csv.bz2")
+wa_medinc <- fread("/Volumes/GoogleDrive/My Drive/data/census/wa_medinc.csv.bz2")
 
 #
 # Number of people by income category
@@ -21,7 +21,7 @@ plot_inc_count <- function(category = "HHInc",
 						   ylim = c(0,880000)){
 hhinc %>%
 	unite(survey, survey, year, remove = FALSE) %>%
-	filter(survey != "acs5_2017",
+	filter(survey != "acs5_2019",
 		   type == category,
 		   NAME %in% county) %>%
 	select(type, income_cpi, income, estimate, year) %>%
@@ -78,7 +78,7 @@ ggplot() +
 plot_inc_prop <- function(category = "HHInc", county, title = paste(county, "HH Percentages")){
 hhinc %>%
 	unite(survey, survey, year, remove = FALSE) %>%
-	filter(survey != "acs5_2017",
+	filter(survey != "acs5_2019",
 		   type == category,
 		   NAME %in% county) %>%
 	select(type, income_cpi, income, estimate, year) %>%

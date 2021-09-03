@@ -1408,7 +1408,8 @@ dis_var <- c(
 	'totrentWHTNL' = 'B25003H_003', # Estimate!!Total!!Renter occupied TENURE (WHITE ALONE, NOT HISPANIC OR LATINO HOUSEHOLDER)
 	'tottenLAT' = 'B25003I_001', # Estimate!!Total TENURE (HISPANIC OR LATINO HOUSEHOLDER)
 	'totownLAT' = 'B25003I_002', # Estimate!!Total!!Owner occupied TENURE (HISPANIC OR LATINO HOUSEHOLDER)
-	'totrentLAT' = 'B25003I_003', # Estimate!!Total!!Renter occupied TENURE (HISPANIC OR LATINO HOUSEHOLDER)
+	'totrentLAT' = 'B25003I_003' # Estimate!!Total!!Renter occupied TENURE (HISPANIC OR LATINO HOUSEHOLDER)
+	)
 
 # ==========================================================================
 # Income by rent burden
@@ -1480,6 +1481,7 @@ ir_var17 <- c(
     'ir_5plus_100000' = 'B25074_063', # Estimate!!Total!!$100 000 or more!!50.0 percent or more
     'ir_x_100000' = 'B25074_064' # Estimate!!Total!!$100 000 or more!!Not computed
     )    
+
 
 ir_var12 <- c(
 'ir_tot_tot' = 'B25074_001', # Total:
