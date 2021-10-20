@@ -6,10 +6,10 @@ library(data.table)
 library(scales)
 library(tidyverse)
 
-hhinc <- fread("/Volumes/GoogleDrive/My Drive/data/census/household_income.csv.bz2")
-hhincten <- fread("/Volumes/GoogleDrive/My Drive/data/census/hhincten.csv.bz2")
-medinc <- fread("/Volumes/GoogleDrive/My Drive/data/census/medinc.csv.bz2")
-wa_medinc <- fread("/Volumes/GoogleDrive/My Drive/data/census/wa_medinc.csv.bz2")
+hhinc <- readRDS("~/git/functions/data/household_income.rds")
+hhincten <- readRDS("~/git/functions/data/hhincten.rds")
+medinc <- readRDS("~/git/functions/data/medinc.rds")
+wa_medinc <- readRDS("~/git/functions/data/wa_medinc.rds")
 
 #
 # Number of people by income category
@@ -166,10 +166,10 @@ ggplot() +
 			  aes(x = year, y = inc, color = race), size = 1.5) +
 	scale_y_continuous(labels = scales::dollar) +
 	labs(title = "Washington Median HH Income by Race",
-		 caption = "Data source: Bureau of Labor Statistics Consumer Price Index &\nUS Census American Community Survey",
-		 y = "2017 dollars",
+		 caption = "Author: Tim Thomas, UC Berkeley\nData source: Bureau of Labor Statistics Consumer Price Index &\nUS Census American Community Survey",
+		 y = "2021 dollars",
 		 x = "Year") +
-	coord_cartesian(ylim = c(20000, 100000)) +
+	coord_cartesian(ylim = c(20000, 120000)) +
 	scale_color_brewer(palette = "Set1",
 					  direction = -1,
 					  name = "Race",
@@ -194,7 +194,7 @@ plot_co_medinc <- function(county){
 ggplot() +
 	geom_line(data = medinc %>%
 					 unite(survey, survey, year, remove = FALSE) %>%
-					 filter(survey != "acs5_2017",
+					 filter(survey != "acs5_2019",
 					 		NAME == county) %>%
 					 select(NAME, year, AMI80_cpi:AMI30_cpi) %>%
 					 gather(ami, inc, AMI80_cpi:AMI30_cpi) %>%
@@ -208,20 +208,20 @@ ggplot() +
 			  aes(x = year, y = inc, group = ami), size = 4, alpha = .2) +
 	geom_line(data = medinc %>%
 					 unite(survey, survey, year, remove = FALSE) %>%
-					 filter(survey != "acs5_2017",
+					 filter(survey != "acs5_2019",
 					 		NAME == county) %>%
 					 select(NAME, year, mhhinc_cpi, mhhinc_asi_cpi, mhhinc_blk_cpi, mhhinc_lat_cpi, mhhinc_whtnl_cpi) %>%
 					 gather(race, inc, mhhinc_cpi:mhhinc_whtnl_cpi) %>%
-					 filter(year %in% c(2000, 2009, 2012, 2015, 2016, 2017)),
+					 filter(year %in% c(2000, 2009, 2012, 2015, 2016, 2019)),
 		### Consider replacing 2014 acs5 for 1 yr in that range
 			  aes(x = year, y = inc, color = race), size = 1.5) +
 	theme_minimal() +
 	scale_y_continuous(labels = scales::dollar) +
 	labs(title = paste0(county, " Median HH Income by Race"),
-		 caption = "Data source: Bureau of Labor Statistics Consumer Price Index &\nUS Census American Community Survey",
-		 y = "2017 dollars",
+		 caption = "Author: Tim Thomas, UC Berkeley\nData source: Bureau of Labor Statistics Consumer Price Index &\nUS Census American Community Survey",
+		 y = "2021 dollars",
 		 x = "Year") +
-	coord_cartesian(ylim = c(20000, 100000)) +
+	coord_cartesian(ylim = c(20000, 120000)) +
 	scale_color_brewer(palette = "Set1",
 					  direction = -1,
 					  name = "Race",
@@ -237,7 +237,7 @@ ggplot() +
 								 "Black"))
 }
 
-# plot_wa_medinc()
+# plot_co_medinc(county = "King")
 
 # plot_co_medinc(county = "Snohomish") +
 # 	annotate("text", x = 2007, y = 60500, label = "80% AMI") +
@@ -265,7 +265,7 @@ ggplot() +
 
 
 # hhincten %>%
-# 	filter(s_y %in% c("acs5_2017", "acs5_2009", "sf3_2000"),
+# 	filter(s_y %in% c("acs5_2019", "acs5_2009", "sf3_2000"),
 # 		   type == "HHIncTenRent") %>%
 # 	group_by(year) %>%
 # 	summarise_at(vars(AMI80_pop:AMI30_pop, HHIncTen_Total), funs(sum)) %>%
@@ -278,7 +278,7 @@ ggplot() +
 
 co_income <- function(county){
 hhincten %>%
-	filter(!s_y %in% c("acs5_2017", "acs1_2015","acs1_2013", "acs1_2016"),
+	filter(!s_y %in% c("acs5_2019", "acs1_2015","acs1_2013", "acs1_2016"),
 		   type == "HHIncTenRent",
 		   NAME == county) %>%
 	group_by(year, NAME) %>%
@@ -305,7 +305,7 @@ ggplot() +
 	scale_fill_brewer("Income", palette = "Set1") +
 	scale_color_brewer("Income", palette = "Set1") +
       scale_y_continuous(labels = scales::comma) +
-      scale_x_continuous(breaks=c(2000,2007, 2012, 2017)) +
+      scale_x_continuous(breaks=c(2000,2007, 2012, 2019)) +
       theme(axis.text.x = element_text(angle = -45, hjust = 0),
           panel.grid.minor.x = element_blank()) + 
       labs(y = "Renting Households", 
@@ -332,7 +332,7 @@ ggplot() +
 # 		   							   "$100k",
 # 		   							   "$60k",
 # 		   							   "$30k"))) %>%
-# 	filter(!s_y %in% c("acs5_2017", "acs1_2015"),
+# 	filter(!s_y %in% c("acs5_2019", "acs1_2015"),
 # 		   type == "HHIncTenRent",
 # 		   NAME %in% c("King", "Pierce", "Snohomish", "Clark", "Spakane")) %>%
 # 	group_by(year, NAME) %>%

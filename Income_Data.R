@@ -40,7 +40,7 @@ source("~/git/functions/Variables.R")
 		function(
 			geography = "county",
 			variables,
-			state = "WA",
+			# state = "WA",
 			county = NULL,
 			geometry = FALSE,
 			survey,
@@ -95,15 +95,26 @@ source("~/git/functions/Variables.R")
 		  			  cache_table = TRUE,
 		  			  year = 2000,
 		  			  sumfile = "sf3",
-		  			  state = "WA",
+		  			  # state = "WA",
 		  			  output = "wide") %>%
 		mutate(year = 2000,
 			   survey = "sf3")
 
 	medinc <-
 		bind_rows(medincdec00, medincacs5yr, medincacs1yr) %>%
-		left_join(., cpi) %>%
-		mutate_at(vars(mhhinc:mhhinc_whtnl), .funs = funs(cpi = .*CPI)) %>%
+		left_join(., cpi) %>% 
+		mutate(
+			mhhinc_cpi = mhhinc * CPI,
+			mhhinc_wht_cpi = mhhinc_wht * CPI,
+			mhhinc_blk_cpi = mhhinc_blk * CPI,
+			mhhinc_aian_cpi = mhhinc_aian * CPI,
+			mhhinc_asi_cpi = mhhinc_asi * CPI,
+			mhhinc_nhop_cpi = mhhinc_nhop * CPI,
+			mhhinc_oth_cpi = mhhinc_oth * CPI,
+			mhhinc_two_cpi = mhhinc_two * CPI,
+			mhhinc_lat_cpi = mhhinc_lat * CPI,
+			mhhinc_whtnl_cpi = mhhinc_whtnl * CPI) %>% 
+		# mutate_at(vars(mhhinc:mhhinc_whtnl), funs = list(cpi = .*CPI)) %>%
 		mutate(AMI80_cpi = mhhinc_cpi*.8,
 			   AMI50_cpi = mhhinc_cpi*.5,
 			   AMI30_cpi = mhhinc_cpi*.3,
@@ -310,10 +321,10 @@ source("~/git/functions/Variables.R")
 
 # date <- format(Sys.time(), "%Y-%m-%d")
 # file.path <- "/data/census/"
-	write_csv(hhinc, "/Volumes/GoogleDrive/My Drive/data/census/household_income.csv.bz2")
-	write_csv(medinc, "/Volumes/GoogleDrive/My Drive/data/census/medinc.csv.bz2")
-	write_csv(wa_medinc, "/Volumes/GoogleDrive/My Drive/data/census/wa_medinc.csv.bz2")
-	write_csv(hhincten, "/Volumes/GoogleDrive/My Drive/data/census/hhincten.csv.bz2")
+	saveRDS(hhinc, "~/git/functions/data/household_income.rds")
+	saveRDS(medinc, "~/git/functions/data/medinc.rds")
+	saveRDS(wa_medinc, "~/git/functions/data/wa_medinc.rds")
+	saveRDS(hhincten, "~/git/functions/data/hhincten.rds")
 
 # ==========================================================================
 # Edits
