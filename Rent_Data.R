@@ -394,7 +394,7 @@ HUDFMR_2003 <-
 	ungroup()
 
 HUDFMR_2004 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FMR2004F_County.xls") %>%
+	readxl::read_excel("~/git/functions/data/hudfmr/FMR2004F_County.xls") %>% 
 	mutate(fips2000 = paste0(str_pad(State, 2, pad = 0), str_pad(County, 3, pad = 0))) %>%
 	select(fips2000, fmr_0 = New_FMR0, fmr_1 = New_FMR1, fmr_2 = New_FMR2, fmr_3 = New_FMR3, fmr_4 = New_FMR4, AreaName = MSAName, countyname = CountyName, State = State_Alpha) %>%
 	group_by(fips2000) %>%
@@ -403,7 +403,7 @@ HUDFMR_2004 <-
 	ungroup()
 
 HUDFMR_2005 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/Revised_FY2005_CntLevel.xls") %>%
+	readxl::read_excel("~/git/functions/data/hudfmr/Revised_FY2005_CntLevel.xls") %>% 
 	select(fips2000 = stco, fmr_0 = FMR_0Bed, fmr_1 = FMR_1Bed, fmr_2 = FMR_2Bed, fmr_3 = FMR_3Bed, fmr_4 = FMR_4Bed, AreaName = MSAName, countyname = CountyName, State = State_Alpha) %>%
 	group_by(fips2000) %>%
 	mutate(fmr_avg = mean(c(fmr_0, fmr_1, fmr_2, fmr_3, fmr_4), na.rm = TRUE),
@@ -411,7 +411,7 @@ HUDFMR_2005 <-
 	ungroup()
 
 HUDFMR_2006 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2006_County_Town.xls") %>%
+	readxl::read_excel("~/git/functions/data/hudfmr/FY2006_County_Town.xls") %>% 
 	select(fips2000 = fips, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5)) %>%
 	group_by(fips2000) %>%

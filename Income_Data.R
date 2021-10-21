@@ -13,12 +13,10 @@ options(scipen=10) # avoid scientific notation
 gc()
 
 # update.packages(ask = FALSE)
-
+source("~/git/functions/functions.r")
 # library(lubridate)
-library(tigris)
-library(tidycensus)
+ipak(c("tigris","tidycensus", "tidyverse", "tigris"))
 options(tigris_use_cache = TRUE)
-library(tidyverse)
 
 
 # ==========================================================================
@@ -30,6 +28,13 @@ var <- "Variables.R"
 
 source("~/git/functions/Variables.R")
 
+data(fips_codes)
+
+states <- 
+	fips_codes %>% 
+	filter(!state_name %in% c("American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "U.S. Minor Outlying Islands", "U.S. Virgin Islands")) %>% 
+	select(state) %>% distinct() %>% pull(state)
+
 #
 # Functions
 # --------------------------------------------------------------------------
@@ -40,7 +45,7 @@ source("~/git/functions/Variables.R")
 		function(
 			geography = "county",
 			variables,
-			# state = "WA",
+			state = states,
 			county = NULL,
 			geometry = FALSE,
 			survey,
@@ -50,7 +55,7 @@ source("~/git/functions/Variables.R")
 			geography = geography,
 			variables = variables,
 			survey = survey,
-			state = state,
+			state = states,
 			county = county,
 			output = "tidy",
 			year = year,
