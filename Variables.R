@@ -1619,3 +1619,20 @@ mob_inc_vars <-
 	'tr_mob_abroad_74999' = 'B07010_065', # Estimate!!Total!!Moved from abroad!!With income!!$65 000 to $74 999 # Mobility by income
 	'tr_mob_abroad_75000' = 'B07010_066' # Estimate!!Total!!Moved from abroad!!With income!!$75 000 or more # Mobility by income
 	)
+
+
+# ==========================================================================
+# Head of household
+# ==========================================================================
+fam_var <- 
+c(
+	'ht_tot' = 'B11001_001', # 	Estimate!!Total:	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)	
+	'ht_fam_tot' = 'B11001_002', # 	Estimate!!Total:!!Family households:	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)	
+	'ht_fam_married' = 'B11001_003', # 	Estimate!!Total:!!Family households:!!Married-couple family	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)	
+	'ht_fam_other_tot' = 'B11001_004', # 	Estimate!!Total:!!Family households:!!Other family:	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)	
+	'ht_fam_other_male' = 'B11001_005', # 	Estimate!!Total:!!Family households:!!Other family:!!Male ouseholder, no spouse present	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)
+	'ht_fam_other_female' = 'B11001_006', # 	Estimate!!Total:!!Family households:!!Other family:!!Female ouseholder, no spouse present	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)
+	'ht_nonfam_tot' = 'B11001_007', # 	Estimate!!Total:!!Nonfamily households:	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)	
+	'ht_nonfam_alone' = 'B11001_008', # 	Estimate!!Total:!!Nonfamily households:!!Householder living lone	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)
+	'ht_nonfam_notalone' = 'B11001_009' # 	Estimate!!Total:!!Nonfamily households:!!Householder not iving alone	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)
+)

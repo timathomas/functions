@@ -37,7 +37,7 @@ setwd("/net/proj/hprm/data/ig/")
 
 # How to download from shared drives
 drive_download("https://drive.google.com/file/d/1KAgbuDWId_7HZVnEll50ZtUJNAv5M2Jj/view?usp=sharing")
-
+drive_download("https://drive.google.com/file/d/1FzuQoEpADrzO_VE0MgbVyOtbSkrhl3eH/view?usp=sharing", path = "~/data/projects/czi/hh_where_moves.csv")
 # how to download from my drive (you can still use URL's)
 
 drive_download("~/data/hprm_data/infogroup/output/fst/US_Consumer_5_File_2019.fst", overwrite = TRUE)
