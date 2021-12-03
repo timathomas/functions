@@ -1,11 +1,18 @@
 # ==========================================================================
 # ARIMA models for eviction
+# Resources
+# 	* https://rpubs.com/riazakhan94/arima_with_example
+# 	* https://otexts.com/fpp2/arima-r.html
 # ==========================================================================
 
 # ==========================================================================
 # Begin Example
 set.seed(250)
 timeseries=arima.sim(list(order = c(1,1,2), ma=c(0.32,0.47), ar=0.8), n = 50)+20
+
+plot(timeseries)
+elecequip %>% stl(s.window='periodic') %>% seasadj() -> eeadj
+autoplot(eeadj)
 
 # End Example
 # ==========================================================================
