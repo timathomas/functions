@@ -275,7 +275,7 @@ whtm <- leaflet(
                    group = "map labels") %>% # see: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
 # Eviction Risk
   	addPolygons(
-		data = final_us_tracts_sf %>% filter(STATEFP == "53"),
+		data = final_us_tracts_sf %>% filter(STATEFP == "06"),
   		group = "White Change", 
   		label = ~case_when(
   			pwht_dif < 0 ~ paste0(scales::percent(pwht_dif, accuracy = 1), " point White decrease"), 
@@ -297,7 +297,7 @@ whtm <- leaflet(
         popupOptions = popupOptions(maxHeight = 215, closeOnClick = TRUE)
   		) %>%   
     addLegend( 
-    	data = final_us_tracts_sf %>% filter(STATEFP == "53"), 
+    	data = final_us_tracts_sf %>% filter(STATEFP == "06"),
         position = 'bottomleft',
         pal = whtpal, 
         values = ~pwht_dif_cat, 
@@ -326,7 +326,7 @@ blkm <- leaflet(
                    group = "map labels") %>% # see: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
 # Eviction Risk
   	addPolygons(
-		data = final_us_tracts_sf %>% filter(STATEFP == "53"),
+		data = final_us_tracts_sf %>% filter(STATEFP == "06"),
   		group = "Black Change", 
   		label = ~case_when(
   			pblk_dif < 0 ~ paste0(scales::percent(pblk_dif, accuracy = 1), " point Black decrease"), 
@@ -348,7 +348,7 @@ blkm <- leaflet(
         popupOptions = popupOptions(maxHeight = 215, closeOnClick = TRUE)
   		) %>%   
     addLegend( 
-    	data = final_us_tracts_sf %>% filter(STATEFP == "53"), 
+    	data = final_us_tracts_sf %>% filter(STATEFP == "06"),
         position = 'bottomleft',
         pal = blkpal, 
         values = ~pblk_dif_cat, 
@@ -376,7 +376,7 @@ latm <- leaflet(
                    group = "map labels") %>% # see: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
 # Eviction Risk
   	addPolygons(
-		data = final_us_tracts_sf %>% filter(STATEFP == "53"),
+		data = final_us_tracts_sf %>% filter(STATEFP == "06"),
   		group = "Latinx Change", 
   		label = ~case_when(
   			plat_dif < 0 ~ paste0(scales::percent(plat_dif, accuracy = 1), " point Latinx decrease"), 
@@ -398,7 +398,7 @@ latm <- leaflet(
         popupOptions = popupOptions(maxHeight = 215, closeOnClick = TRUE)
   		) %>%   
     addLegend( 
-    	data = final_us_tracts_sf %>% filter(STATEFP == "53"), 
+    	data = final_us_tracts_sf %>% filter(STATEFP == "06"),
         position = 'bottomleft',
         pal = latpal, 
         values = ~plat_dif_cat, 
@@ -429,7 +429,7 @@ asim <- leaflet(
                    group = "map labels") %>% # see: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
 # Eviction Risk
   	addPolygons(
-		data = final_us_tracts_sf %>% filter(STATEFP == "53"),
+		data = final_us_tracts_sf %>% filter(STATEFP == "06"),
   		group = "Asian Change", 
   		label = ~case_when(
   			pasi_dif < 0 ~ paste0(scales::percent(pasi_dif, accuracy = 1), " point Asian decrease"), 
