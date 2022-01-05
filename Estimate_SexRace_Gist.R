@@ -141,6 +141,10 @@
 	# NOTE: Names ommitted in final dataframe.
 
 # ==========================================================================
-# Save as csv
+# Save files
 # ==========================================================================
-	write_csv(df_geo_sex_race %>% st_drop_geometry(), 'path')
+	# as csv
+	write_csv(df_geo_sex_race %>% st_drop_geometry(), 'path/df_geo_sex_race.csv')
+
+	# as a spatial dataframe
+	st_write(df_geo_sex_race, '~/Downloads/df_geo_sex_race.gpkg') # can also use the .shp format
