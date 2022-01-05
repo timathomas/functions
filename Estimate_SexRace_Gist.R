@@ -121,7 +121,7 @@
 		predict_race(
 			.,
 			census.geo = "tract",
-			census.key = '4c26aa6ebbaef54a55d3903212eabbb506ade381' # https://api.census.gov/data/key_signup.html
+			census.key = 'Your api key here' # https://api.census.gov/data/key_signup.html
 			) %>%
 		arrange(id) %>%
 		rename(white = pred.whi, # for easier interpretation
