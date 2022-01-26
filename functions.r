@@ -2,6 +2,13 @@
 # Package load or install and load 
 # ==========================================================================
 
+RR <- function(y, n){
+  local = y/n
+  regional = sum(y, na.rm = TRUE)/sum(n, na.rm = TRUE)
+  RR = local/regional
+  RR
+}
+
 latest_file <- function(path)
   list.files(path,full.names = T) %>%
     enframe(name = NULL) %>%
