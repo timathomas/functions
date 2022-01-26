@@ -2,6 +2,14 @@
 # Package load or install and load 
 # ==========================================================================
 
+latest_file <- function(path)
+  list.files(path,full.names = T) %>%
+    enframe(name = NULL) %>%
+    bind_cols(pmap_df(., file.info)) %>%
+    filter(mtime==max(mtime)) %>%
+    pull(value)
+
+
 options(scipen=10, width=system("tput cols", intern=TRUE), tigris_use_cache = TRUE) # avoid scientific notation
 
 ipak <- function(pkg){
