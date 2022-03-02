@@ -9,11 +9,11 @@ RR <- function(y, n){
   RR
 }
 
-latest_file <- function(path)
+latest_file <- function(path, keyword = NULL)
   list.files(path,full.names = T) %>%
     enframe(name = NULL) %>%
     bind_cols(pmap_df(., file.info)) %>%
-    filter(mtime==max(mtime)) %>%
+    filter(mtime==max(mtime), grepl(keyword)) %>%
     pull(value)
 
 
@@ -109,3 +109,99 @@ map_polygons <- function(data, group, label, color, popup, position = 'topright'
         title = title
       ))
     }
+
+# ==========================================================================
+# Erase Water
+# ==========================================================================
+
+# rt_water <- function(s, c = NULL, a = 500000){
+#     w <- tigris::area_water(s, c, class = "sf") %>% filter(AWATER > a)
+#     t <- tigris::tracts(s, c, class = "sf")
+#     e <- sf::st_difference(t, sf::st_union(sf::st_combine(w)))
+# }
+
+rm_water <- function(
+    sf_df,
+    s,
+    c = tigris::list_counties(s)$county_code,
+    a = 500000){
+    # c <- tigris::fips_codes %>% filter(state == s) %>% pull(county_code)
+    w <- tigris::area_water(state = s, county = c, class = "sf") %>% dplyr::filter(AWATER > a) %>%
+         sf::st_transform(sf::st_crs(sf_df))
+    e <- sf::st_difference(sf::st_make_valid(sf_df), sf::st_union(w)) %>%
+      sf::st_collection_extract('POLYGON')
+    rm(w)
+    return(e)
+}
+
+rt_water(map_pan_df_tr, "CA", counties)
+    # ==========================================================================
+    # DO NOT RUN
+    #        kc_water <- tigris::area_water("WA", "King", class = "sf")
+    #        kc <- tigris::tracts("WA", "King", class = "sf")
+    #
+    #        kc_erase <- st_erase(kc, kc_water)
+    #
+    #        king_bg <- geo_join(kc_erase,
+    #                            nt,
+    #                            by = c("GEOID"))
+    # END DO NOT RUN
+    # ==========================================================================
+
+#
+# Erase water
+# --------------------------------------------------------------------------
+
+no_water <- function(df, st, size = 500000){
+    county_water <- tigris::list_counties(st)$county_code
+
+    water <- area_water(
+      state = st,
+      county = county_water,
+      class = 'sf') %>%
+      # Filter out small bodies of water
+      filter(AWATER > size) %>%
+      # Set projection
+      st_transform(crs = st_crs(final_df))
+
+    # Remove water
+    # NOTE: the st_erase function sometimes converts the sf geometry from
+    # a MULTIPOLYGON to a GEOMETRYCOLLECTION. Leaflet can't handle a GEOMETRYCOLLECTION
+    # so you have to use `st_collection_extract('POLYGON') function
+    # to convert the geometry back to a MULTIPOLYGON. To check if this
+    # happened you can run st_geometry(object) to see what the output is.
+
+    # Apply function to CA tracts
+    nw <-
+      st_difference(final_df, st_union(water)) %>%
+      st_collection_extract('POLYGON')
+
+    gc()
+    return(nw)
+}
+
+# counties <- function(state, df)
+#   counties(state) %>%
+#   st_transform(st_crs(df)) %>%
+#   .[df, ]  %>%
+#   arrange(STATEFP, COUNTYFP) %>%
+
+# st_geometry(counties) <- NULL
+
+# state_water <- counties %>% pull(STATEFP)
+# county_water <- counties %>% pull(COUNTYFP)
+
+# water <-
+# map2_dfr(state_water, county_water,
+#   function(states = state_water, counties = county_water){
+#     area_water(
+#       state = states,
+#       county = counties,
+#       class = 'sf') %>%
+#     filter(AWATER > 500000)
+#     }) %>%
+# st_transform(st_crs(bay5))
+
+#
+# Remove water & non-urban areas & simplify spatial features
+# --------------------------------------------------------------------------
