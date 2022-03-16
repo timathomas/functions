@@ -134,7 +134,7 @@ rm_water <- function(
     return(e)
 }
 
-rt_water(map_pan_df_tr, "CA", counties)
+    # rm_water(map_pan_df_tr, "CA", counties)
     # ==========================================================================
     # DO NOT RUN
     #        kc_water <- tigris::area_water("WA", "King", class = "sf")
