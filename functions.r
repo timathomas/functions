@@ -26,10 +26,10 @@ ipak <- function(pkg){
     sapply(pkg, require, character.only = TRUE)
 }
 
-ipak_gh <- function(pkg){
+ipak_gh <- function(pkg, force = FALSE){
     new.pkg <- pkg[!(sub('.*/', '', pkg) %in% installed.packages()[, "Package"])]
     if (length(new.pkg)) 
-        remotes::install_github(new.pkg, dependencies = TRUE)
+        remotes::install_github(new.pkg, dependencies = TRUE, force = force)
     sapply(sub('.*/', '', pkg), require, character.only = TRUE)
 }
 
