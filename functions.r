@@ -20,7 +20,9 @@ latest_file <- function(path, keyword = NULL)
 options(scipen=10, width=system("tput cols", intern=TRUE), tigris_use_cache = TRUE) # avoid scientific notation
 
 ipak <- function(pkg, update = FALSE){
-    update.packages(ask = FALSE)
+    if(update = TRUE){
+        update.packages(ask = FALSE)
+    }
     new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
     if (length(new.pkg)) 
         install.packages(new.pkg, dependencies = TRUE)
