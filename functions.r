@@ -409,3 +409,7 @@ pd_plotGGPLOT2 <- function (bart_machine, j, levs = c(0.05, seq(from = 0.1, to =
 
   return(gg_output)
 }
+
+
+# prentgap_plot_el <- pd_plotGGPLOT(bm_el, "rm_rent_gap")
+# plot_wline <- prentgap_plot_el + geom_vline(aes(xintercept = 200)) + labs(x = "Regional Median Rent plotted at specified quantiles")
