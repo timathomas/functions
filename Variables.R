@@ -1622,17 +1622,39 @@ mob_inc_vars <-
 
 
 # ==========================================================================
-# Head of household
+# HOUSEHOLD TYPE (INCLUDING LIVING ALONE)
 # ==========================================================================
 fam_var <- 
 c(
-	'ht_tot' = 'B11001_001', # 	Estimate!!Total:	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)	
-	'ht_fam_tot' = 'B11001_002', # 	Estimate!!Total:!!Family households:	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)	
-	'ht_fam_married' = 'B11001_003', # 	Estimate!!Total:!!Family households:!!Married-couple family	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)	
-	'ht_fam_other_tot' = 'B11001_004', # 	Estimate!!Total:!!Family households:!!Other family:	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)	
-	'ht_fam_other_male' = 'B11001_005', # 	Estimate!!Total:!!Family households:!!Other family:!!Male ouseholder, no spouse present	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)
-	'ht_fam_other_female' = 'B11001_006', # 	Estimate!!Total:!!Family households:!!Other family:!!Female ouseholder, no spouse present	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)
-	'ht_nonfam_tot' = 'B11001_007', # 	Estimate!!Total:!!Nonfamily households:	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)	
-	'ht_nonfam_alone' = 'B11001_008', # 	Estimate!!Total:!!Nonfamily households:!!Householder living lone	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)
-	'ht_nonfam_notalone' = 'B11001_009' # 	Estimate!!Total:!!Nonfamily households:!!Householder not iving alone	HOUSEHOLD TYPE (INCLUDING LIVING ALONE)
+	'ht_tot' = 'B11001_001', # 	Estimate!!Total:
+	'ht_fam_tot' = 'B11001_002', # 	Estimate!!Total:!!Family households:
+	'ht_fam_married' = 'B11001_003', # 	Estimate!!Total:!!Family households:!!Married-couple family
+	'ht_fam_other_tot' = 'B11001_004', # 	Estimate!!Total:!!Family households:!!Other family:
+	'ht_fam_other_male' = 'B11001_005', # 	Estimate!!Total:!!Family households:!!Other family:!!Male ouseholder, no spouse present
+	'ht_fam_other_female' = 'B11001_006', # 	Estimate!!Total:!!Family households:!!Other family:!!Female ouseholder, no spouse present
+	'ht_nonfam_tot' = 'B11001_007', # 	Estimate!!Total:!!Nonfamily households:
+	'ht_nonfam_alone' = 'B11001_008', # 	Estimate!!Total:!!Nonfamily households:!!Householder living lone
+	'ht_nonfam_notalone' = 'B11001_009' # 	Estimate!!Total:!!Nonfamily households:!!Householder not iving alone
 )
+
+
+# ==========================================================================
+# TENURE BY FAMILIES AND PRESENCE OF OWN CHILDREN
+# ==========================================================================
+'B25012_001' # Estimate!!Total:
+'B25012_002' # Estimate!!Total:!!Owner-occupied housing units:
+'B25012_003' # Estimate!!Total:!!Owner-occupied housing units:!!With related children of the householder under 18:
+'B25012_004' # Estimate!!Total:!!Owner-occupied housing units:!!With related children of the householder under 18:!!With own children of the householder under 18:
+'B25012_005' # Estimate!!Total:!!Owner-occupied housing units:!!With related children of the householder under 18:!!With own children of the householder under 18:!!Under 6 years only
+'B25012_006' # Estimate!!Total:!!Owner-occupied housing units:!!With related children of the householder under 18:!!With own children of the householder under 18:!!Under 6 years and 6 to 17 years
+'B25012_007' # Estimate!!Total:!!Owner-occupied housing units:!!With related children of the householder under 18:!!With own children of the householder under 18:!!6 to 17 years
+'B25012_008' # Estimate!!Total:!!Owner-occupied housing units:!!With related children of the householder under 18:!!No own children of the householder under 18
+'B25012_009' # Estimate!!Total:!!Owner-occupied housing units:!!No related children of the householder under 18
+'B25012_010' # Estimate!!Total:!!Renter-occupied housing units:
+'B25012_011' # Estimate!!Total:!!Renter-occupied housing units:!!With related children of the householder under 18:
+'B25012_012' # Estimate!!Total:!!Renter-occupied housing units:!!With related children of the householder under 18:!!With own children of the householder under 18:
+'B25012_013' # Estimate!!Total:!!Renter-occupied housing units:!!With related children of the householder under 18:!!With own children of the householder under 18:!!Under 6 years only
+'B25012_014' # Estimate!!Total:!!Renter-occupied housing units:!!With related children of the householder under 18:!!With own children of the householder under 18:!!Under 6 years and 6 to 17 years
+'B25012_015' # Estimate!!Total:!!Renter-occupied housing units:!!With related children of the householder under 18:!!With own children of the householder under 18:!!6 to 17 years
+'B25012_016' # Estimate!!Total:!!Renter-occupied housing units:!!With related children of the householder under 18:!!No own children of the householder under 18
+'B25012_017' # Estimate!!Total:!!Renter-occupied housing units:!!No related children of the householder under 18
