@@ -213,7 +213,7 @@ no_water <- function(df, st, size = 500000){
 # BART partial dependency plot in ggplot
 # --------------------------------------------------------------------------
 
-pd_plotGGPLOT <- function (bart_machine, j, levs = c(0.05, seq(from = 0.1, to = 0.9,
+pd_plotGGPLOT <- function(bart_machine, j, levs = c(0.05, seq(from = 0.1, to = 0.9,
                                               by = 0.1), 0.95), lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
 {
   #check_serialization(bart_machine)
@@ -301,8 +301,14 @@ pd_plotGGPLOT <- function (bart_machine, j, levs = c(0.05, seq(from = 0.1, to = 
 #
 # Alex code
 # --------------------------------------------------------------------------
-pd_plotGGPLOT2 <- function (bart_machine, j, levs = c(0.05, seq(from = 0.1, to = 0.9,
-                                                               by = 0.1), 0.95), lower_ci = 0.025, upper_ci = 0.975, prop_data = 1, hist = FALSE)
+pd_plotGGPLOT2 <- function(
+    bart_machine = bm_er,
+    j = 'pblack',
+    levs = c(0.05, seq(from = 0.1, to = 0.9,by = 0.1), 0.95),
+    lower_ci = 0.025,
+    upper_ci = 0.975,
+    prop_data = 1,
+    hist = FALSE)
 {
   #check_serialization(bart_machine)
   if (class(j) == "integer") {
@@ -380,7 +386,7 @@ pd_plotGGPLOT2 <- function (bart_machine, j, levs = c(0.05, seq(from = 0.1, to =
       #                         max(bart_avg_predictions_lower,
       #                             bart_avg_predictions_upper))) +
       ggthemes::theme_few() +
-      scale_y_continuous("Partial Effect", sec.axis = sec_axis(trans=~.*500, name = "Number of Tracts")) +
+      scale_y_continuous("Partial Effect", sec.axis = sec_axis(trans=~.*500, name = "Frequency")) +
       #    scale_y_continuous(position = "right") +
       labs(x = paste(var_name, "plotted at specified quantiles"),
            y = ylab_name)
