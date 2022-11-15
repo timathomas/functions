@@ -1,13 +1,16 @@
 # ==========================================================================
 # Rent
 # ==========================================================================
-source("~/git/functions/functions.r")
+source("~/git/timathomas/functions/functions.r")
+ipak_gh(c("jalvesaq/colorout"))
 ipak(c(
 "data.table",
 "tidyverse",
 "tidycensus",
+"purrr",
 "tigris"))
 
+state_abb <- "WA"
 
 #
 # Census variables
@@ -16,7 +19,7 @@ ipak(c(
 #
 # Pull variables
 # --------------------------------------------------------------------------
-source("~/git/functions/Variables.R")
+source("~/git/timathomas/functions/Variables.R")
 
 	acs5yr <- c(2019,2009)
 	acs1year <- rep(2012:2019, 1)
@@ -24,7 +27,7 @@ source("~/git/functions/Variables.R")
 		function(
 			geography = "county",
 			variables,
-			state = "WA",
+			state = state_abb,
 			county = NULL,
 			geometry = FALSE,
 			survey,
@@ -67,7 +70,7 @@ source("~/git/functions/Variables.R")
 		  			  cache_table = TRUE,
 		  			  year = 2000,
 		  			  sumfile = "sf3",
-		  			  state = "WA",
+		  			  state = state_abb,
 		  			  output = "wide") %>%
 		mutate(year = 2000,
 			   survey = "sf3",
@@ -86,7 +89,7 @@ source("~/git/functions/Variables.R")
 	# 	  			  cache_table = TRUE,
 	# 	  			  year = 2020,
 	# 	  			  sumfile = "sf3",
-	# 	  			  state = "WA",
+	# 	  			  state = state_abb,
 	# 	  			  output = "wide") %>% glimpse()
 	# 	mutate(year = 2000,
 	# 		   survey = "sf3",
@@ -128,7 +131,7 @@ source("~/git/functions/Variables.R")
 		  			  cache_table = TRUE,
 		  			  year = 2000,
 		  			  sumfile = "sf3",
-		  			  state = "WA",
+		  			  state = state_abb,
 		  			  output = "tidy") %>%
 		mutate(year = 2000,
 			   survey = "sf3") %>%
@@ -140,7 +143,7 @@ source("~/git/functions/Variables.R")
 
 runits5yr2019 <-
 	get_acs(geography = "county",
-			state = "WA",
+			state = state_abb,
 			variables = runits_acs2015_vars,
 			cache_table = TRUE,
 			year = 2019,
@@ -149,7 +152,7 @@ runits5yr2019 <-
 
 	runits5yr2019 <-
 	get_acs(geography = "county",
-			state = "WA",
+			state = state_abb,
 			variables = runits_acs2015_vars,
 			cache_table = TRUE,
 			year = 2019,
@@ -158,7 +161,7 @@ runits5yr2019 <-
 
 runits5yr2009 <-
 	get_acs(geography = "county",
-			state = "WA",
+			state = state_abb,
 			variables = runits_acs2014_vars,
 			cache_table = TRUE,
 			year = 2009,
@@ -187,7 +190,7 @@ runitsdec2000 <-
 		  			  cache_table = TRUE,
 		  			  year = 2000,
 		  			  sumfile = "sf3",
-		  			  state = "WA",
+		  			  state = state_abb,
 		  			  output = "tidy") %>%
 		mutate(year = 2000,
 			   survey = "sf3") %>%
@@ -196,7 +199,7 @@ runitsdec2000 <-
 #
 # Affordable housing units
 # --------------------------------------------------------------------------
-medinc <- readRDS("~/git/functions/data/medinc.rds")
+medinc <- readRDS("~/git/timathomas/functions/data/medinc.rds")
 
 runits1yr_adj2019 <-
 	runits1yr2015_2019 %>% 
@@ -385,7 +388,7 @@ z_rent <-
 # ==========================================================================
 
 HUDFMR_2003 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FMR2003F_County.xls") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FMR2003F_County.xls") %>%
 	mutate(fips2000 = paste0(str_pad(State, 2, pad = 0), str_pad(County, 3, pad = 0))) %>%
 	select(fips2000, fmr_0 = FMR0, fmr_1 = FMR1, fmr_2 = FMR2, fmr_3 = FMR3, fmr_4 = FMR4, AreaName = msaname, countyname = CountyName, State = State_Alpha) %>%
 	group_by(fips2000) %>%
@@ -394,7 +397,7 @@ HUDFMR_2003 <-
 	ungroup()
 
 HUDFMR_2004 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FMR2004F_County.xls") %>% 
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FMR2004F_County.xls") %>%
 	mutate(fips2000 = paste0(str_pad(State, 2, pad = 0), str_pad(County, 3, pad = 0))) %>%
 	select(fips2000, fmr_0 = New_FMR0, fmr_1 = New_FMR1, fmr_2 = New_FMR2, fmr_3 = New_FMR3, fmr_4 = New_FMR4, AreaName = MSAName, countyname = CountyName, State = State_Alpha) %>%
 	group_by(fips2000) %>%
@@ -403,7 +406,7 @@ HUDFMR_2004 <-
 	ungroup()
 
 HUDFMR_2005 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/Revised_FY2005_CntLevel.xls") %>% 
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/Revised_FY2005_CntLevel.xls") %>%
 	select(fips2000 = stco, fmr_0 = FMR_0Bed, fmr_1 = FMR_1Bed, fmr_2 = FMR_2Bed, fmr_3 = FMR_3Bed, fmr_4 = FMR_4Bed, AreaName = MSAName, countyname = CountyName, State = State_Alpha) %>%
 	group_by(fips2000) %>%
 	mutate(fmr_avg = mean(c(fmr_0, fmr_1, fmr_2, fmr_3, fmr_4), na.rm = TRUE),
@@ -411,7 +414,7 @@ HUDFMR_2005 <-
 	ungroup()
 
 HUDFMR_2006 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2006_County_Town.xls") %>% 
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY2006_County_Town.xls") %>%
 	select(fips2000 = fips, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5)) %>%
 	group_by(fips2000) %>%
@@ -421,7 +424,7 @@ HUDFMR_2006 <-
 
 
 HUDFMR_2007 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2007F_County_Town.xls") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY2007F_County_Town.xls") %>%
 	select(fips2000 = fips, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5)) %>%
 	group_by(fips2000) %>%
@@ -430,7 +433,7 @@ HUDFMR_2007 <-
 	ungroup()
 
 HUDFMR_2008 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/HUDFMR_2008.xls") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/HUDFMR_2008.xls") %>%
 	select(fips2000 = fips, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = Areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5)) %>%
 	group_by(fips2000) %>%
@@ -439,7 +442,7 @@ HUDFMR_2008 <-
 	ungroup()
 
 HUDFMR_2009 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2009_4050_Rev_Final.xls") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY2009_4050_Rev_Final.xls") %>%
 	select(fips2000 = FIPS, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = Areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5)) %>%
 	group_by(fips2000) %>%
@@ -448,7 +451,7 @@ HUDFMR_2009 <-
 	ungroup()
 
 HUDFMR_2010 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2010_4050_Final_PostRDDs.xls") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY2010_4050_Final_PostRDDs.xls") %>%
 	select(fips2000 = FIPS, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = Areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5)) %>%
 	group_by(fips2000) %>%
@@ -458,7 +461,7 @@ HUDFMR_2010 <-
 
 
 HUDFMR_2011 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2011_4050_Final.xls") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY2011_4050_Final.xls") %>%
 	select(fips2000 = FIPS, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = Areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5)) %>%
 	group_by(fips2000) %>%
@@ -467,7 +470,7 @@ HUDFMR_2011 <-
 	ungroup()
 
 HUDFMR_2012 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2012_4050_Final.xls") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY2012_4050_Final.xls") %>%
 	select(fips2000 = FIPS, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = Areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5)) %>%
 	group_by(fips2000) %>%
@@ -476,7 +479,7 @@ HUDFMR_2012 <-
 	ungroup()
 
 HUDFMR_2013 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2013_4050_Final.xls") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY2013_4050_Final.xls") %>%
 	select(fips2010, fips2000, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = Areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5),
 		   fips2010 = substr(fips2010, 1, 5)) %>%
@@ -486,7 +489,7 @@ HUDFMR_2013 <-
 	ungroup()
 
 HUDFMR_2014 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2014_4050_RevFinal.xls") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY2014_4050_RevFinal.xls") %>%
 	select(fips2010, fips2000, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = Areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5),
 		   fips2010 = substr(fips2010, 1, 5)) %>%
@@ -496,7 +499,7 @@ HUDFMR_2014 <-
 	ungroup()
 
 HUDFMR_2015 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2015_4050_RevFinal.xls") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY2015_4050_RevFinal.xls") %>%
 	select(fips2010, fips2000, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = Areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5),
 		   fips2010 = substr(fips2010, 1, 5)) %>%
@@ -506,7 +509,7 @@ HUDFMR_2015 <-
 	ungroup()
 
 HUDFMR_2016 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2016F-4050-RevFinal4.xlsx") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY2016F-4050-RevFinal4.xlsx") %>%
 	select(fips2010, fips2000, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5),
 		   fips2010 = substr(fips2010, 1, 5)) %>%
@@ -516,7 +519,7 @@ HUDFMR_2016 <-
 	ungroup()
 
 HUDFMR_2017 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2017-4050-County-Level_Data.xlsx") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY2017-4050-County-Level_Data.xlsx") %>%
 	select(fips2010, fips2000, fmr_0 = fmr0, fmr_1 = fmr1, fmr_2 = fmr2, fmr_3 = fmr3, fmr_4 = fmr4, AreaName = areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2000 = substr(fips2000, 1, 5),
 		   fips2010 = substr(fips2010, 1, 5)) %>%
@@ -526,7 +529,7 @@ HUDFMR_2017 <-
 	ungroup()
 
 HUDFMR_2018 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY18_4050_FMRs_rev.xlsx") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY18_4050_FMRs_rev.xlsx") %>%
 	select(fips2010:fmr_4, AreaName = areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2010 = substr(fips2010, 1, 5)) %>%
 	group_by(fips2010) %>%
@@ -535,7 +538,7 @@ HUDFMR_2018 <-
 	ungroup()
 
 HUDFMR_2019 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY2019_4050_FMRs_rev2.xlsx") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY2019_4050_FMRs_rev2.xlsx") %>%
 	select(fips2010:fmr_4, AreaName = areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2010 = substr(fips2010, 1, 5)) %>%
 	group_by(fips2010) %>%
@@ -544,7 +547,7 @@ HUDFMR_2019 <-
 	ungroup()
 
 HUDFMR_2020 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY20_4050_FMRs_rev.xlsx") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY20_4050_FMRs_rev.xlsx") %>%
 	select(fips2010:fmr_4, AreaName = areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2010 = substr(fips2010, 1, 5)) %>%
 	group_by(fips2010) %>%
@@ -553,7 +556,7 @@ HUDFMR_2020 <-
 	ungroup()
 
 HUDFMR_2021 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY21_4050_FMRs_rev.xlsx") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY21_4050_FMRs_rev.xlsx") %>%
 	select(fips2010:fmr_4, AreaName = areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2010 = substr(fips2010, 1, 5)) %>%
 	group_by(fips2010) %>%
@@ -562,7 +565,7 @@ HUDFMR_2021 <-
 	ungroup()
 
 HUDFMR_2022 <-
-	readxl::read_excel("~/git/functions/data/hudfmr/FY22_FMRs.xlsx") %>%
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY22_FMRs_revised.xlsx") %>%
 	select(fips2010:fmr_4, AreaName = areaname, countyname, county_town_name, State = state_alpha, metro) %>%
 	mutate(fips2010 = substr(fips2010, 1, 5), metro = as.numeric(metro)) %>%
 	group_by(fips2010) %>%
@@ -570,7 +573,16 @@ HUDFMR_2022 <-
 		   year = 2022) %>%
 	ungroup()
 
-hudfmr <- bind_rows(HUDFMR_2003, HUDFMR_2004, HUDFMR_2005, HUDFMR_2006, HUDFMR_2007, HUDFMR_2008, HUDFMR_2009, HUDFMR_2010, HUDFMR_2011, HUDFMR_2012, HUDFMR_2013, HUDFMR_2014, HUDFMR_2015, HUDFMR_2016, HUDFMR_2017, HUDFMR_2018, HUDFMR_2019,HUDFMR_2020,HUDFMR_2021,HUDFMR_2022) %>% 
+HUDFMR_2023 <-
+	readxl::read_excel("~/git/timathomas/functions/data/hudfmr/FY23_FMRs.xlsx") %>%
+	select(fips2010 = fips, fmr_0:fmr_4, AreaName = hud_area_name, countyname, county_town_name, State = state_alpha, metro) %>%
+	mutate(fips2010 = substr(fips2010, 1, 5), metro = as.numeric(metro)) %>%
+	group_by(fips2010) %>%
+	mutate(fmr_avg = mean(c(fmr_0, fmr_1, fmr_2, fmr_3, fmr_4), na.rm = TRUE),
+		   year = 2023) %>%
+	ungroup()
+
+hudfmr <- bind_rows(HUDFMR_2003, HUDFMR_2004, HUDFMR_2005, HUDFMR_2006, HUDFMR_2007, HUDFMR_2008, HUDFMR_2009, HUDFMR_2010, HUDFMR_2011, HUDFMR_2012, HUDFMR_2013, HUDFMR_2014, HUDFMR_2015, HUDFMR_2016, HUDFMR_2017, HUDFMR_2018, HUDFMR_2019,HUDFMR_2020,HUDFMR_2021,HUDFMR_2022, HUDFMR_2023) %>%
 	left_join(., cpi) %>% 
 	mutate_at(vars(fmr_0:fmr_4, fmr_avg), funs(cpi = .*CPI)) %>%
 	mutate(countyname = gsub(' County.*', '', countyname),
@@ -578,12 +590,17 @@ hudfmr <- bind_rows(HUDFMR_2003, HUDFMR_2004, HUDFMR_2005, HUDFMR_2006, HUDFMR_2
 
 wa_hudfmr <-
 	hudfmr %>%
-	filter(State == "WA") %>% 
-	group_by(year) %>%
-	summarise(fmr_avg_cpi = median(fmr_avg_cpi),
+	filter(State == state_abb) %>%
+	group_by(year, countyname) %>%
+	summarise(fmr_avg_cpi = fmr_avg_cpi,
 			  rb30_income = (fmr_avg_cpi*12)/.3,
-			  State = "WA",
-			  countyname = "Washington")
+			  State = state_abb) %>%
+	mutate(county =
+		case_when(
+			countyname %in% c("King", "Snohomish", "Pierce", "Spokane", "Clark", "Skamania", "Kitsap") ~ countyname, TRUE ~ "Washington"
+			)) %>%
+	group_by(year, county) %>%
+	summarise(fmr_avg_cpi = median(fmr_avg_cpi))
 
 hudfmr2 <-
 	bind_rows(hudfmr, wa_hudfmr)
@@ -699,7 +716,7 @@ sea_acs1_pl <-
 		acs(geography = "place",
 			variables = tenure_varsACS,
 			survey = "acs1",
-			state = "WA",
+			state = state_abb,
 			year = x) %>%
 		mutate(year = x)
 	}) %>%
@@ -710,7 +727,7 @@ ten_acs2009_pl <-
 	acs(geography = "place",
 		variables = tenure_varsACS,
 		survey = "acs5",
-		state = "WA",
+		state = state_abb,
 		year = 2009) %>%
 	mutate(year = 2007) %>%
 	spread(variable, estimate) %>%
@@ -766,13 +783,13 @@ ten_place <-
 # ==========================================================================
 
 time <- paste0(format(Sys.time(), "%Y-%m-%d"),".csv.bz2")
-results.path <- "~/git/functions/data/"
-	saveRDS(rb,"~/git/functions/data/rent_burden.rds"))
-	saveRDS(runits,"~/git/functions/data/rental_units_cost.rds")
-	saveRDS(ten_place,"~/git/functions/data/tenure_place.rds")
-	saveRDS(ten_county,"~/git/functions/data/tenure_county.rds")
-	saveRDS(runits,"~/git/functions/data/rental_units_cost.rds")
-	saveRDS(hudfmr2, "~/git/functions/data/hudfmr.rds")
-	saveRDS(wa_hudfmr, "~/git/functions/data/wa_hudfmr.rds")
+results.path <- "~/git/timathomas/functions/data/"
+	saveRDS(rb,"~/git/timathomas/functions/data/rent_burden.rds"))
+	saveRDS(runits,"~/git/timathomas/functions/data/rental_units_cost.rds")
+	saveRDS(ten_place,"~/git/timathomas/functions/data/tenure_place.rds")
+	saveRDS(ten_county,"~/git/timathomas/functions/data/tenure_county.rds")
+	saveRDS(runits,"~/git/timathomas/functions/data/rental_units_cost.rds")
+	saveRDS(hudfmr2, "~/git/timathomas/functions/data/hudfmr.rds")
+	saveRDS(wa_hudfmr, "~/git/timathomas/functions/data/wa_hudfmr.rds")
 
 
