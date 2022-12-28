@@ -2,6 +2,8 @@
 # Package load or install and load 
 # ==========================================================================
 
+census_api_key <- "63217a192c5803bfc72aab537fe4bf19f6058326"
+
 RR <- function(y, n){
   local = y/n
   regional = sum(y, na.rm = TRUE)/sum(n, na.rm = TRUE)
