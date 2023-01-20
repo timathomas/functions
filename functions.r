@@ -215,8 +215,11 @@ no_water <- function(df, st, size = 500000){
 # BART partial dependency plot in ggplot
 # --------------------------------------------------------------------------
 
-pd_plotGGPLOT <- function(bart_machine, j, levs = c(0.05, seq(from = 0.1, to = 0.9,
-                                              by = 0.1), 0.95), lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+pd_plotGGPLOT <- function(
+  bart_machine,
+  j,
+  levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95),
+  lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
 {
   #check_serialization(bart_machine)
   if (class(j) == "integer") {
