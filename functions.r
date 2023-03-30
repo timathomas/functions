@@ -18,8 +18,8 @@ latest_file <- function(path, keyword = NULL)
     filter(mtime==max(mtime), grepl(keyword)) %>%
     pull(value)
 
-
-options(scipen=10, width=system("tput cols", intern=TRUE), tigris_use_cache = TRUE) # avoid scientific notation
+col_width <- options(width=system("tput cols", intern=TRUE))
+options(scipen=10, tigris_use_cache = TRUE) # avoid scientific notation
 
 ipak <- function(pkg, update = FALSE){
     if(update == TRUE){
