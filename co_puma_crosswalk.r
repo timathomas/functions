@@ -11,14 +11,12 @@ get_co_puma <-
     librarian::shelf(tidyverse, tidycensus)
     
     us_counties <- 
-      # map(unique(fips_codes$state)[1:51], function(state){
       map2(st, yr, function(s, y){
         tracts(state = s, year = y) %>% 
           st_centroid()}
         )|> bind_rows()
     
     us_pumas <- 
-      # map(unique(fips_codes$state)[1:51], function(state){
       map2(st, yr, function(s, y){
         pumas(state = s, year = y) %>% 
           mutate(YEAR = y)}
@@ -27,7 +25,6 @@ get_co_puma <-
     us_co_puma <- 
       st_join(us_pumas, us_counties) %>% 
       st_drop_geometry() %>%
-      select(PUMACE10, STATEFP, COUNTYFP, NAMELSAD10) %>% 
       left_join(
         fips_codes %>% 
           select(
@@ -46,6 +43,7 @@ get_co_puma <-
 
 # qsave(us_co_puma, "~/git/timathomas/functions/data/us_county_puma_cross.qs")
 # wa <- get_co_puma("WA", 2017)
+# ct <- get_co_puma("CT", 2017)
 # check <- pumas(state = "WA", year = 2017) %>% left_join(wa)
 # check %>% filter(grepl("King", county)) %>% select(NAMELSAD10) %>% plot()
 # check %>% filter(grepl("Pierce", county)) %>% select(NAMELSAD10) %>% plot()
