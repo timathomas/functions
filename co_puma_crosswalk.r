@@ -5,7 +5,8 @@ get_co_puma <-
     us_counties <- 
       # map(unique(fips_codes$state)[1:51], function(state){
       map2(st, yr, function(s, y){
-        tigris::counties(state = s, year = y)}
+        tracts(state = s, year = y) %>% 
+          st_centroid()}
         )|> bind_rows()
     
     us_pumas <- 
@@ -16,21 +17,26 @@ get_co_puma <-
         )|> bind_rows() 
     
     us_co_puma <- 
-      st_join(us_counties, us_pumas) %>% 
-      select(
-        YEAR, 
-        STATEFP:GEOID,
-        COUNTY = NAME, 
-        PUMA_GEOID = GEOID10, 
-        PUMACE10, 
-        PUMA_NAME = NAMELSAD10) %>% 
+      st_join(us_pumas, us_counties) %>% 
+      st_drop_geometry() %>%
+      select(PUMACE10, STATEFP, COUNTYFP, NAMELSAD10) %>% 
       left_join(
         fips_codes %>% 
-          select(state, state_name, STATEFP = state_code) %>% 
-          distinct()
-      ) 
+          select(
+            STATEFP = state_code, 
+            COUNTYFP = county_code, 
+            state, 
+            state_name, 
+            county)
+        ) %>% 
+      distinct() %>% 
+      arrange(county)
+    
     return(us_co_puma)
     }
 
-# qsave(us_co_puma, "~/data/census/us_county_puma_cross.qs")
+# qsave(us_co_puma, "~/git/timathomas/functions/data/us_county_puma_cross.qs")
 # wa <- get_co_puma("WA", 2017)
+# check <- pumas(state = "WA", year = 2017) %>% left_join(wa)
+# check %>% filter(grepl("Pierce", county)) %>% select(NAMELSAD10) %>% plot()
+# check %>% filter(grepl("Whatcom", county)) %>% select(NAMELSAD10) %>% plot()
