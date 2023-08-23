@@ -38,7 +38,8 @@ get_co_puma <-
             county)
         ) %>% 
       distinct() %>% 
-      arrange(county)
+      arrange(county) %>% 
+      mutate(county = str_replace(county, " County", ""))
     
     return(us_co_puma)
     }
