@@ -38,5 +38,6 @@ get_co_puma <-
 # qsave(us_co_puma, "~/git/timathomas/functions/data/us_county_puma_cross.qs")
 # wa <- get_co_puma("WA", 2017)
 # check <- pumas(state = "WA", year = 2017) %>% left_join(wa)
+# check %>% filter(grepl("King", county)) %>% select(NAMELSAD10) %>% plot()
 # check %>% filter(grepl("Pierce", county)) %>% select(NAMELSAD10) %>% plot()
 # check %>% filter(grepl("Whatcom", county)) %>% select(NAMELSAD10) %>% plot()
