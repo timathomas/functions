@@ -1,3 +1,11 @@
+# Joins state census tracts to PUMAs to get county fips codes & names
+#
+# You can choose multiple states
+#
+# Note: highly populated counties may have numerous PUMAs 
+# (e.g., King County, WA) while low populated areas may have numerous 
+# counties in one PUMA (e.g., North Dakota)
+
 get_co_puma <- 
   function(st, yr){
     librarian::shelf(tidyverse, tidycensus)
