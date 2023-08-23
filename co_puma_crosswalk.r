@@ -5,6 +5,9 @@
 # Note: highly populated counties may have numerous PUMAs 
 # (e.g., King County, WA) while low populated areas may have numerous 
 # counties in one PUMA (e.g., North Dakota)
+# 
+# NOTE: year 2022 begins pulling 2020 geographies. Default year is 
+# 2021, which pulls 2010 geographies
 
 get_co_puma <- 
   function(st, yr){
