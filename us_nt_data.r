@@ -2,14 +2,15 @@
 # Create neighborhood typology for entire country
 # ==========================================================================
 
-if (!require("pacman")) install.packages("pacman")
-pacman::p_load_gh("timathomas/neighborhood")
-pacman::p_load(sf, tigris, tidycensus, tidyverse)
+if (!require("librarian")) install.packages("librarian")
+librarian::shelf(evictionresearch/neighborhood, sf, tigris, tidycensus, tidyverse)
 options(tigris_use_cache = TRUE)
 
 # ==========================================================================
 # Create and save data
 # ==========================================================================
+
+year = 2022
 
 us_states <- 
   states(cb = TRUE) %>% 
@@ -20,9 +21,9 @@ us_states <-
 
 us_tracts <-
   map_df(us_states, function(states){
-      ntdf(state = "CA", year = 2019) %>% st_crs()
-      mutate(state = states, year = 2019)
+      ntdf(state = states, year = year) %>%
+      mutate(state = states, year = year)
     })
 
-saveRDS(us_tracts, "~/git/neighborhood/data/us_nt_tracts.rds")
-write_csv(us_tracts, "~/git/neighborhood/data/us_nt_tracts.csv.bz2")
+saveRDS(us_tracts, paste0("~/git/evictionresearch/neighborhood/data/us_nt_tracts", year, ".rds")
+write_csv(us_tracts, paste0("~/git/evictionresearch/neighborhood/data/us_nt_tracts", year, ".csv.bz2")
