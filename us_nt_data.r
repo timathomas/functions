@@ -25,5 +25,5 @@ us_tracts <-
       mutate(state = states, year = year)
     })
 
-saveRDS(us_tracts, paste0("~/git/evictionresearch/neighborhood/data/us_nt_tracts", year, ".rds")
-write_csv(us_tracts, paste0("~/git/evictionresearch/neighborhood/data/us_nt_tracts", year, ".csv.bz2")
+saveRDS(us_tracts, paste0("~/git/evictionresearch/neighborhood/data/us_nt_tracts", year, ".rds"))
+write_csv(us_tracts, paste0("~/git/evictionresearch/neighborhood/data/us_nt_tracts", year, ".csv.bz2"))

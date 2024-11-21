@@ -24,6 +24,7 @@
 # Through Tidycensus and RStudio
 # --------------------------------------------------------------------------
 
+	# vars_acs5_2022 <- tidycensus::load_variables(2022, 'acs5', cache = TRUE)
 	# vars_acs5_2019 <- tidycensus::load_variables(2019, 'acs5', cache = TRUE)
 	# vars_acs5_2017 <- tidycensus::load_variables(2017, 'acs5', cache = TRUE)
 	# vars_acs1_2017 <- tidycensus::load_variables(2017, 'acs1', cache = TRUE)
