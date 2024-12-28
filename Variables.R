@@ -24,6 +24,8 @@
 # Through Tidycensus and RStudio
 # --------------------------------------------------------------------------
 
+	# vars_acs5_2023 <- tidycensus::load_variables(2023, 'acs5', cache = TRUE)
+	# vars_acs1_2023 <- tidycensus::load_variables(2023, 'acs1', cache = TRUE)
 	# vars_acs5_2022 <- tidycensus::load_variables(2022, 'acs5', cache = TRUE)
 	# vars_acs5_2019 <- tidycensus::load_variables(2019, 'acs5', cache = TRUE)
 	# vars_acs5_2017 <- tidycensus::load_variables(2017, 'acs5', cache = TRUE)
@@ -42,6 +44,8 @@
 	# vars_dec10sf2 <- tidycensus::load_variables(2010, 'sf2', cache = TRUE)
 	# vars_dec00sf3 <- tidycensus::load_variables(2000, 'sf3', cache = TRUE)
 	# vars_dec00sf1 <- tidycensus::load_variables(2000, 'sf1', cache = TRUE)
+	# View(vars_acs5_2023)
+	# View(vars_acs1_2023)
 	# View(vars_acs5_2022)
 	# View(vars_acs5_2019)
 	# View(vars_acs5_2017)
@@ -66,12 +70,12 @@
 # Migration mobility variables
 # ==========================================================================
 
-# Mobility 
+# Mobility
     # B07004A_001 - WHITE ALONE
     # B07004H_001 - WHITE ALONE, NOT HISPANIC OR LATINO
     # B07009_001 - education status
     # B07010_001 - individual income
-    # B07011_001 - Median Income 
+    # B07011_001 - Median Income
     # B07012_001 - poverty status
     # B07013_001 - Tenure
     # B07201_001 - metro
@@ -1485,7 +1489,7 @@ ir_var17 <- c(
     'ir_499_100000' = 'B25074_062', # Estimate!!Total!!$100 000 or more!!40.0 to 49.9 percent
     'ir_5plus_100000' = 'B25074_063', # Estimate!!Total!!$100 000 or more!!50.0 percent or more
     'ir_x_100000' = 'B25074_064' # Estimate!!Total!!$100 000 or more!!Not computed
-    )    
+    )
 
 
 ir_var12 <- c(
@@ -1552,7 +1556,7 @@ ir_var12 <- c(
 # 'move_dif_st' = 'B07002_005' # Moved from different state
 # 'move_abroad' = 'B07002_006' # Moved from abroad
 
-mob_inc_vars <- 
+mob_inc_vars <-
 	c(
 	'tr_mob_tot' = 'B07010_001', # Estimate!!Total # Mobility by income
 	'tr_mob_tot_noinc' = 'B07010_002', # Estimate!!Total!!No income # Mobility by income
@@ -1626,7 +1630,7 @@ mob_inc_vars <-
 # ==========================================================================
 # HOUSEHOLD TYPE (INCLUDING LIVING ALONE)
 # ==========================================================================
-fam_var <- 
+fam_var <-
 c(
 	'ht_tot' = 'B11001_001', # 	Estimate!!Total:
 	'ht_fam_tot' = 'B11001_002', # 	Estimate!!Total:!!Family households:
