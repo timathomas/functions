@@ -21,25 +21,30 @@ latest_file <- function(path, keyword = NULL)
 # col_width <- options(width=system("tput cols", intern=TRUE))
 options(scipen=10, tigris_use_cache = TRUE) # avoid scientific notation
 
-ipak <- function(pkg, update = FALSE){
+ipak <- function(..., update = FALSE){
+    pkg <- as.character(substitute(list(...)))
     if(update == TRUE){
         update.packages(ask = FALSE)
     }
     new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
-    if (length(new.pkg)) 
+    if (length(new.pkg))
         install.packages(new.pkg, dependencies = TRUE)
     sapply(pkg, require, character.only = TRUE)
 }
 
-ipak_gh <- function(pkg, force = FALSE){
+ipak_gh <- function(..., force = FALSE){
+    pkg <- as.character(substitute(list(...)))
     new.pkg <- pkg[!(sub('.*/', '', pkg) %in% installed.packages()[, "Package"])]
-    if (length(new.pkg)) 
+    if (length(new.pkg))
         remotes::install_github(new.pkg, dependencies = TRUE, force = force)
     sapply(sub('.*/', '', pkg), require, character.only = TRUE)
 }
 
-# Example
-# ipak_gh(c("lmullen/gender", "mtennekes/tmap", "jalvesaq/colorout", "timathomas/neighborhood", "arthurgailes/rsegregation"))
+# ipak(lm, dplyr, ggplot2)
+# ipak_gh(lmullen/gender, mtennekes/tmap)
+
+
+The `substitute(list(...))` captures the unevaluated arguments and `as.character()` converts them to strings.
 
 # ==========================================================================
 # Mapping 
