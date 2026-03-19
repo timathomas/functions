@@ -9,7 +9,7 @@ smb://netid.washington.edu/csde/homes/fellows/t77
 ```
 
 - - - -
-## R 
+## R
 **Tidy Census**
 * [Basic usage of tidycensus • tidycensus](https://walkerke.github.io/tidycensus/articles/basic-usage.html)
 * [Julia Silge - Using tidycensus and leaflet to map Census data](https://juliasilge.com/blog/using-tidycensus/)
@@ -34,7 +34,7 @@ Install Microsoft open R: https://docs.microsoft.com/en-us/machine-learning-serv
 sudo fdesetup authrestart
 ```
 
-### How to sftp 
+### How to sftp
 Nice [short tutorial](https://www.cs.fsu.edu/~myers/howto/commandLineSSH.html)
 
 ```
@@ -212,6 +212,14 @@ find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '(echo {} && cd {} && git sta
 1. Navigate to `Git`
 2. Run `ls | xargs -I{} git -C {} pull`
 	1. [bash - Run git pull over all subdirectories - Stack Overflow](https://stackoverflow.com/questions/3497123/run-git-pull-over-all-subdirectories)
+	
+
+## NEW!!
+for repo in ~/git/*/*; do                                                                                             
+    [ -d "$repo/.git" ] || continue                                                                                     
+    echo "=== $repo ==="                                                                                                
+    git -C "$repo" status -s
+  done  
 
 - - - -
 ## Python
